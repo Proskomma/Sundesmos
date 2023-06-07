@@ -1,0 +1,7 @@
+{
+  "name": "poc-juxtalinear",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
