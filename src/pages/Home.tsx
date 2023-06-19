@@ -14,6 +14,7 @@ import {
   DraggableLocation,
 } from "../components/Droppable"
 import { Button, Grid, Stack } from "@mui/material"
+import { IoCaretUp, IoCaretDown } from "react-icons/io5"
 import "./Home.css"
 
 import { SentenceContext } from "../App"
@@ -80,7 +81,8 @@ const Home: React.FC = () => {
       return
     }
 
-    setSentences(readUsfm(srcUsfm))
+    const res = readUsfm(srcUsfm)
+    setSentences(res)
   }
 
   const reorder = (
@@ -180,6 +182,24 @@ const Home: React.FC = () => {
     return result
   }
 
+  const chunkUpHandler = (n: number) => {
+    const newItemArrays = [...itemArrays];
+    [newItemArrays[n - 1], newItemArrays[n]] = [
+      newItemArrays[n],
+      newItemArrays[n - 1],
+    ]
+    setItemArrays(newItemArrays)
+  }
+
+  const chunkDownHandler = (n: number) => {
+    const newItemArrays = [...itemArrays];
+    [newItemArrays[n], newItemArrays[n + 1]] = [
+      newItemArrays[n + 1],
+      newItemArrays[n],
+    ]
+    setItemArrays(newItemArrays)
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -213,46 +233,63 @@ const Home: React.FC = () => {
           <Grid item sm={4}>
             <DragDropContext onDragEnd={onDragEnd}>
               {itemArrays.map((items, n) => (
-                <StrictModeDroppable
-                  key={n}
-                  droppableId={`${n}`}
-                  direction="horizontal"
-                >
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      style={getListStyle(snapshot.isDraggingOver)}
-                      {...provided.droppableProps}
+                <Stack key={n} flexDirection="row">
+                  <Stack height={36} justifyContent="center">
+                    <Button
+                      sx={{ minWidth: "30px", height: "14px" }}
+                      onClick={() => chunkUpHandler(n)}
+                      disabled={!n}
                     >
-                      {items.map((item, index) => (
-                        <Draggable
-                          key={item.id}
-                          draggableId={item.id}
-                          index={index}
-                        >
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              style={getItemStyle(
-                                snapshot.isDragging,
-                                provided.draggableProps.style
-                              )}
-                              onClick={(event) =>
-                                event.detail === 2 &&
-                                handleDoubleClick(item, n, index)
-                              }
-                            >
-                              {item.content}
-                            </div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </StrictModeDroppable>
+                      <IoCaretUp />
+                    </Button>
+                    <Button
+                      sx={{ minWidth: "30px", height: "14px" }}
+                      onClick={() => chunkDownHandler(n)}
+                      disabled={n === itemArrays.length - 1}
+                    >
+                      <IoCaretDown />
+                    </Button>
+                  </Stack>
+                  <StrictModeDroppable
+                    droppableId={`${n}`}
+                    direction="horizontal"
+                  >
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        style={getListStyle(snapshot.isDraggingOver)}
+                        {...provided.droppableProps}
+                      >
+                        {items.map((item, index) => (
+                          <Draggable
+                            key={item.id}
+                            draggableId={item.id}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={getItemStyle(
+                                  snapshot.isDragging,
+                                  provided.draggableProps.style
+                                )}
+                                onClick={(event) =>
+                                  event.detail === 2 &&
+                                  handleDoubleClick(item, n, index)
+                                }
+                              >
+                                {item.content}
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </StrictModeDroppable>
+                </Stack>
               ))}
             </DragDropContext>
           </Grid>
