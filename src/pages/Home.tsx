@@ -156,7 +156,6 @@ const Home: React.FC = () => {
       ]
     }
     setItemArrays(newItemArrays)
-    console.log(newItemArrays)
   }
 
   /**
@@ -230,7 +229,7 @@ const Home: React.FC = () => {
           <Grid item sm={4}>
             {sentences.length ? sentences[curIndex][0].sourceString : ""}
           </Grid>
-          <Grid item sm={4}>
+          <Grid item sm={4} width="100%">
             <DragDropContext onDragEnd={onDragEnd}>
               {itemArrays.map((items, n) => (
                 <Stack key={n} flexDirection="row">
