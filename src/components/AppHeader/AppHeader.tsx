@@ -10,17 +10,14 @@ import { Button } from "@mui/material"
 import { SentenceContext } from "../../App"
 
 export const AppHeader: React.FC = () => {
-  const { sentences, setSentences } = useContext(SentenceContext)
-  const { curIndex, setCurIndex } = useContext(SentenceContext)
-
-  console.log("theme in header:", sentences)
+  const { sentences, curIndex, setCurIndex } = useContext(SentenceContext)
 
   const onPrevHandler = () => {
     if (curIndex > 0) {
       setCurIndex(curIndex - 1)
     }
   }
-  
+
   const onNextHandler = () => {
     if (curIndex < sentences.length - 1) {
       setCurIndex(curIndex + 1)
@@ -33,7 +30,7 @@ export const AppHeader: React.FC = () => {
         <Button onClick={onPrevHandler}>
           <IoArrowBackCircleOutline size={32} />
         </Button>
-        Sentence {curIndex} of {sentences.length}
+        Sentence {sentences.length ? curIndex + 1 : 0} of {sentences.length}
         <Button onClick={onNextHandler}>
           <IoArrowForwardCircleOutline size={32} />
         </Button>

@@ -26,9 +26,9 @@ interface ISource {
 }
 
 interface ISentence {
-  gloss?: string
-  source?: ISource[]
-  sourceString?: string
+  gloss: string
+  source: ISource[]
+  sourceString: string
 }
 
 interface ISentenceContext {

@@ -28,7 +28,7 @@ import { Layout } from "./components/Layout"
 setupIonicReact()
 
 export const SentenceContext = createContext<ISentenceContext>({
-  sentences: [],
+  sentences: [[]],
   curIndex: 0,
   setSentences: () => undefined,
   setCurIndex: (curId: number) => undefined,
