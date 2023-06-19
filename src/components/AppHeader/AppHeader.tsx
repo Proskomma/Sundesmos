@@ -11,7 +11,7 @@ import { SentenceContext } from "../../App"
 
 export const AppHeader: React.FC = () => {
   const { sentences, curIndex, setCurIndex } = useContext(SentenceContext)
-  console.log(sentences)
+
   const onPrevHandler = () => {
     if (curIndex > 0) {
       setCurIndex(curIndex - 1)

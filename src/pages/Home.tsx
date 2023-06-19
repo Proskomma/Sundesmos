@@ -207,13 +207,7 @@ const Home: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        {/* <IonHeader collapse="condense"> 
-          <IonToolbar>
-            <IonTitle size="large">Blank</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <ExploreContainer /> */}
-        <Stack flexDirection={"row"}>
+        <Stack flexDirection="row" justifyContent="center" gap={4} py={4}>
           <Button variant="contained" onClick={openUsfm}>
             Open usfm
           </Button>
@@ -225,11 +219,11 @@ const Home: React.FC = () => {
             hidden
           />
         </Stack>
-        <Grid container spacing={2}>
-          <Grid item sm={4}>
+        <Grid container>
+          <Grid item sm={4} p={2}>
             {sentences.length ? sentences[curIndex][0].sourceString : ""}
           </Grid>
-          <Grid item sm={4} width="100%">
+          <Grid item sm={4} p={2} pl={0} width="100%">
             <DragDropContext onDragEnd={onDragEnd}>
               {itemArrays.map((items, n) => (
                 <Stack key={n} flexDirection="row">
@@ -292,7 +286,7 @@ const Home: React.FC = () => {
               ))}
             </DragDropContext>
           </Grid>
-          <Grid item sm={4}></Grid>
+          <Grid item sm={4} p={2}></Grid>
         </Grid>
       </IonContent>
     </IonPage>
