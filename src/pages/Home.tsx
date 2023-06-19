@@ -12,7 +12,7 @@ import {
   Draggable,
   DropResult,
   DraggableLocation,
-} from '../components/Droppable';
+} from "../components/Droppable"
 import { Button, Grid, Stack } from "@mui/material"
 import "./Home.css"
 
@@ -86,28 +86,98 @@ const Home: React.FC = () => {
   const reorder = (
     list: { id: string; content: string }[],
     startIndex: number,
-    endIndex: number,
+    endIndex: number
   ) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-  
-    return result;
-  };
+    const result = Array.from(list)
+    const [removed] = result.splice(startIndex, 1)
+    result.splice(endIndex, 0, removed)
 
-  const onDragEnd = (result: any, n: number) => {
+    return result
+  }
+
+  const onDragEnd = (result: DropResult) => {
+    const { source, destination } = result
+
     // dropped outside the list
-    if (!result.destination) {
-        return;
+    if (!destination) {
+      return
     }
-    const newItems = reorder(
-        itemArrays[n],
-        result.source.index,
-        result.destination.index
-    );
-    const newItemArrays = [...itemArrays];
-    newItemArrays[n] = newItems;
-    setItemArrays(newItemArrays);
+
+    const sInd = +source.droppableId
+    const dInd = +destination.droppableId
+
+    if (sInd === dInd) {
+      const newItems = reorder(
+        itemArrays[sInd],
+        source.index,
+        destination.index
+      )
+      const newItemArrays = [...itemArrays]
+      newItemArrays[sInd] = newItems
+      setItemArrays(newItemArrays)
+    } else {
+      const result = move(
+        itemArrays[sInd],
+        itemArrays[dInd],
+        source,
+        destination
+      )
+      const newItemArrays = [...itemArrays]
+      newItemArrays[sInd] = result[sInd]
+      newItemArrays[dInd] = result[dInd]
+
+      setItemArrays(newItemArrays.filter((group) => group.length))
+    }
+  }
+
+  const handleDoubleClick = (item: any, rowN: number, colN: number) => {
+    let newItemArrays = [...itemArrays]
+    if (colN === newItemArrays[rowN].length || (colN === 0 && rowN === 0)) {
+      // first col in first row
+      return
+    }
+    if (colN === 0) {
+      // merge with previous row
+      newItemArrays[rowN - 1] = [
+        ...newItemArrays[rowN - 1],
+        ...newItemArrays[rowN],
+      ]
+      newItemArrays[rowN] = []
+      newItemArrays = newItemArrays.filter((a) => a.length)
+    } else {
+      // Make new row
+      newItemArrays = [
+        ...newItemArrays.slice(0, rowN),
+        newItemArrays[rowN].slice(0, colN),
+        newItemArrays[rowN].slice(colN),
+        ...newItemArrays.slice(rowN + 1),
+      ]
+    }
+    setItemArrays(newItemArrays)
+    console.log(newItemArrays)
+  }
+
+  /**
+   * Moves an item from one chunk to another chunk.
+   */
+  const move = (
+    source: Iterable<unknown> | ArrayLike<unknown>,
+    destination: Iterable<unknown> | ArrayLike<unknown>,
+    droppableSource: DraggableLocation,
+    droppableDestination: DraggableLocation
+  ) => {
+    const sourceClone = Array.from(source)
+    const destClone = Array.from(destination)
+    const [removed] = sourceClone.splice(droppableSource.index, 1)
+
+    destClone.splice(droppableDestination.index, 0, removed)
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result: { [key: string]: any } = {}
+    result[droppableSource.droppableId] = sourceClone
+    result[droppableDestination.droppableId] = destClone
+
+    return result
   }
 
   return (
@@ -118,7 +188,7 @@ const Home: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        {/* <IonHeader collapse="condense">
+        {/* <IonHeader collapse="condense"> 
           <IonToolbar>
             <IonTitle size="large">Blank</IonTitle>
           </IonToolbar>
@@ -141,12 +211,13 @@ const Home: React.FC = () => {
             {sentences.length ? sentences[curIndex][0].sourceString : ""}
           </Grid>
           <Grid item sm={4}>
-            {itemArrays.map((items, n) => (
-              <DragDropContext
-                key={n}
-                onDragEnd={(result) => onDragEnd(result, n)}
-              >
-                <StrictModeDroppable droppableId="droppable" direction="horizontal">
+            <DragDropContext onDragEnd={onDragEnd}>
+              {itemArrays.map((items, n) => (
+                <StrictModeDroppable
+                  key={n}
+                  droppableId={`${n}`}
+                  direction="horizontal"
+                >
                   {(provided, snapshot) => (
                     <div
                       ref={provided.innerRef}
@@ -168,10 +239,10 @@ const Home: React.FC = () => {
                                 snapshot.isDragging,
                                 provided.draggableProps.style
                               )}
-                              // onClick={(event) =>
-                              //   event.detail === 2 &&
-                              //   handleDoubleClick(item, n, index)
-                              // }
+                              onClick={(event) =>
+                                event.detail === 2 &&
+                                handleDoubleClick(item, n, index)
+                              }
                             >
                               {item.content}
                             </div>
@@ -182,8 +253,8 @@ const Home: React.FC = () => {
                     </div>
                   )}
                 </StrictModeDroppable>
-              </DragDropContext>
-            ))}
+              ))}
+            </DragDropContext>
           </Grid>
           <Grid item sm={4}></Grid>
         </Grid>
