@@ -6,7 +6,7 @@ import {
   IoArrowBackCircleOutline,
   IoArrowForwardCircleOutline,
 } from "react-icons/io5"
-import { Button } from "@mui/material"
+import { Button, Stack } from "@mui/material"
 import { SentenceContext } from "../../App"
 
 export const AppHeader: React.FC = () => {
@@ -24,7 +24,8 @@ export const AppHeader: React.FC = () => {
     }
   }
 
-  const currentSource = () => sentences.length ? sentences[curIndex][0].source : null
+  const currentSource = () =>
+    sentences.length ? sentences[curIndex][0].source : null
 
   const currentChapter = () => currentSource()?.at(0)?.cv.split(":")[0] ?? 0
 
@@ -35,14 +36,16 @@ export const AppHeader: React.FC = () => {
   return (
     <IonHeader>
       <IonToolbar>
-        <Button onClick={onPrevHandler}>
-          <IoArrowBackCircleOutline size={32} />
-        </Button>
-        Sentence {sentences.length ? curIndex + 1 : 0} of {sentences.length}{" "}
-        (ch:{currentChapter()}, v{startVerse()} - {endVerse()})
-        <Button onClick={onNextHandler}>
-          <IoArrowForwardCircleOutline size={32} />
-        </Button>
+        <Stack flexDirection="row" justifyContent="center" alignItems="center">
+          <Button onClick={onPrevHandler}>
+            <IoArrowBackCircleOutline size={32} />
+          </Button>
+          Sentence {sentences.length ? curIndex + 1 : 0} of {sentences.length}{" "}
+          (ch:{currentChapter()}, v{startVerse()} - {endVerse()})
+          <Button onClick={onNextHandler}>
+            <IoArrowForwardCircleOutline size={32} />
+          </Button>
+        </Stack>
       </IonToolbar>
     </IonHeader>
   )

@@ -301,7 +301,7 @@ const Home: React.FC = () => {
               ))}
             </DragDropContext>
           </Grid>
-          <Grid item sm={4} p={2}></Grid>
+          <Grid item sm={4} p={2}>gloss</Grid>
         </Grid>
       </IonContent>
     </IonPage>
