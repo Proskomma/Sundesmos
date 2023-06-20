@@ -301,7 +301,9 @@ const Home: React.FC = () => {
               ))}
             </DragDropContext>
           </Grid>
-          <Grid item sm={4} p={2}>gloss</Grid>
+          <Grid item sm={4} p={2}>
+            {sentences.length ? "gloss" : ""}
+          </Grid>
         </Grid>
       </IonContent>
     </IonPage>
