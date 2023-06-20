@@ -50,6 +50,8 @@ const Home: React.FC = () => {
     { id: string; content: string }[][]
   >([])
 
+  const clickRef = useRef(0)
+
   useEffect(() => {
     if (sentences.length) {
       setItemArrays([getItems()])
@@ -133,29 +135,43 @@ const Home: React.FC = () => {
   }
 
   const handleDoubleClick = (item: any, rowN: number, colN: number) => {
-    let newItemArrays = [...itemArrays]
-    if (colN === newItemArrays[rowN].length || (colN === 0 && rowN === 0)) {
-      // first col in first row
-      return
+    clickRef.current += 1
+
+    if (clickRef.current === 1) {
+      setTimeout(() => {
+        if (clickRef.current === 2) {
+          // Double click logic
+          let newItemArrays = [...itemArrays]
+          if (
+            colN === newItemArrays[rowN].length ||
+            (colN === 0 && rowN === 0)
+          ) {
+            // first col in first row
+            return
+          }
+          if (colN === 0) {
+            // merge with previous row
+            newItemArrays[rowN - 1] = [
+              ...newItemArrays[rowN - 1],
+              ...newItemArrays[rowN],
+            ]
+            newItemArrays[rowN] = []
+            newItemArrays = newItemArrays.filter((a) => a.length)
+          } else {
+            // Make new row
+            newItemArrays = [
+              ...newItemArrays.slice(0, rowN),
+              newItemArrays[rowN].slice(0, colN),
+              newItemArrays[rowN].slice(colN),
+              ...newItemArrays.slice(rowN + 1),
+            ]
+          }
+          setItemArrays(newItemArrays)
+        }
+
+        clickRef.current = 0
+      }, 300)
     }
-    if (colN === 0) {
-      // merge with previous row
-      newItemArrays[rowN - 1] = [
-        ...newItemArrays[rowN - 1],
-        ...newItemArrays[rowN],
-      ]
-      newItemArrays[rowN] = []
-      newItemArrays = newItemArrays.filter((a) => a.length)
-    } else {
-      // Make new row
-      newItemArrays = [
-        ...newItemArrays.slice(0, rowN),
-        newItemArrays[rowN].slice(0, colN),
-        newItemArrays[rowN].slice(colN),
-        ...newItemArrays.slice(rowN + 1),
-      ]
-    }
-    setItemArrays(newItemArrays)
   }
 
   /**
@@ -268,8 +284,7 @@ const Home: React.FC = () => {
                                   snapshot.isDragging,
                                   provided.draggableProps.style
                                 )}
-                                onClick={(event) =>
-                                  event.detail === 2 &&
+                                onClick={() =>
                                   handleDoubleClick(item, n, index)
                                 }
                               >
