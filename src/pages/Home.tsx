@@ -29,7 +29,7 @@ const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
   margin: `0 ${grid}px 0 0`,
 
   // change background colour if dragging
-  background: isDragging ? "lightgreen" : "black",
+  background: isDragging ? "lightgreen" : "white",
 
   // styles we need to apply on draggables
   ...draggableStyle,
@@ -198,8 +198,8 @@ const Home: React.FC = () => {
   }
 
   const chunkUpHandler = (n: number) => {
-    const newItemArrays = [...itemArrays];
-    [newItemArrays[n - 1], newItemArrays[n]] = [
+    const newItemArrays = [...itemArrays]
+    ;[newItemArrays[n - 1], newItemArrays[n]] = [
       newItemArrays[n],
       newItemArrays[n - 1],
     ]
@@ -207,8 +207,8 @@ const Home: React.FC = () => {
   }
 
   const chunkDownHandler = (n: number) => {
-    const newItemArrays = [...itemArrays];
-    [newItemArrays[n], newItemArrays[n + 1]] = [
+    const newItemArrays = [...itemArrays]
+    ;[newItemArrays[n], newItemArrays[n + 1]] = [
       newItemArrays[n + 1],
       newItemArrays[n],
     ]
