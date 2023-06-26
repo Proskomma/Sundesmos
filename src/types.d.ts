@@ -8,7 +8,7 @@ interface IOutput {
       [key: string]: any
     }>
   >
-  sentences: ISentence[][]
+  sentences: ISentence[][][]
 }
 
 interface IContext {
@@ -32,8 +32,15 @@ interface ISentence {
 }
 
 interface ISentenceContext {
-  sentences: ISentence[][]
+  sentences: ISentence[][][]
+  itemArrays: IItem[][][]
   curIndex: number
-  setSentences: (sentences: ISentence[][]) => void
+  setGlobalSentences: (sentences: ISentence[][][]) => void
+  setGlobalItemArrays: (index: number, itemArrays: IItem[][]) => void
   setCurIndex: (curIndex: number) => void
+}
+
+interface IItem {
+  id: string
+  content: string
 }

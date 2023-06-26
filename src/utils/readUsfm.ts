@@ -89,7 +89,16 @@ export const readUsfm = (srcUsfm: string | undefined) => {
                 (w.occurrences = workspace.occurrences[w.lemma])
             )
           output.sentences
-            .map((s: Array<ISentence>) => s[0].source)
+            .map((s: Array<Array<ISentence>>) =>
+              s.map(
+                // over each sentence chunk
+                (sc) =>
+                  sc.map(
+                    // over each word object in a sentence chunk
+                    (scw) => scw.source
+                  )
+              )
+            )
             .forEach((s) =>
               s
                 ?.filter((w: IWorkspace) => !w.occurrences)
@@ -132,7 +141,7 @@ export const readUsfm = (srcUsfm: string | undefined) => {
     ],
     text: [
       {
-        description: "Process text",
+        description: "Process text including end of sentence detection",
         test: () => true,
         action: ({
           workspace,
@@ -150,11 +159,13 @@ export const readUsfm = (srcUsfm: string | undefined) => {
           ) {
             if (workspace.currentSentence.length > 0) {
               output.sentences.push([
-                {
-                  source: workspace.currentSentence,
-                  sourceString: workspace.currentSentenceString,
-                  gloss: "",
-                },
+                [
+                  {
+                    source: workspace.currentSentence,
+                    sourceString: workspace.currentSentenceString,
+                    gloss: "",
+                  },
+                ],
               ])
               workspace.currentSentence = []
               workspace.currentSentenceString = ""
@@ -196,5 +207,5 @@ export const readUsfm = (srcUsfm: string | undefined) => {
   const docId = pk.gqlQuerySync("{documents {id}}").data.documents[0].id
   cl.renderDocument({ docId, config: {}, output })
 
-  return output.sentences;
+  return output.sentences
 }

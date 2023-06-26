@@ -10,22 +10,24 @@ import { Button, Stack } from "@mui/material"
 import { SentenceContext } from "../../App"
 
 export const AppHeader: React.FC = () => {
-  const { sentences, curIndex, setCurIndex } = useContext(SentenceContext)
+  const { sentences, itemArrays, curIndex, setCurIndex } = useContext(SentenceContext)
 
   const onPrevHandler = () => {
     if (curIndex > 0) {
       setCurIndex(curIndex - 1)
+      console.log(itemArrays)
     }
   }
 
   const onNextHandler = () => {
     if (curIndex < sentences.length - 1) {
       setCurIndex(curIndex + 1)
+      console.log(itemArrays)
     }
   }
 
   const currentSource = () =>
-    sentences.length ? sentences[curIndex][0].source : null
+    sentences.length ? sentences[curIndex][0][0].source : null
 
   const currentChapter = () => currentSource()?.at(0)?.cv.split(":")[0] ?? 0
 

@@ -29,18 +29,29 @@ setupIonicReact()
 
 export const SentenceContext = createContext<ISentenceContext>({
   sentences: [[]],
+  itemArrays: [[[]]],
   curIndex: 0,
-  setSentences: () => undefined,
+  setGlobalSentences: () => undefined,
+  setGlobalItemArrays: () => undefined,
   setCurIndex: (curId: number) => undefined,
 })
 
 const App: React.FC = () => {
-  const [sentences, setSentences] = useState(new Array<Array<ISentence>>())
+  const [sentences, setGlobalSentences] = useState(new Array<Array<Array<ISentence>>>())
+  const [itemArrays, setItemArrays] = useState<
+    { id: string; content: string }[][][]
+  >([])
   const [curIndex, setCurIndex] = useState(0)
+
+  const setGlobalItemArrays = (index: number, itemArr: IItem[][]) => {
+    const newItemArrays = [...itemArrays]
+    newItemArrays[index] = itemArr
+    setItemArrays(newItemArrays)
+  }
 
   return (
     <SentenceContext.Provider
-      value={{ sentences, curIndex, setSentences, setCurIndex }}
+      value={{ sentences, itemArrays, curIndex, setGlobalSentences, setGlobalItemArrays, setCurIndex }}
     >
       <IonApp>
         <IonReactRouter>

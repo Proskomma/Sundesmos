@@ -45,21 +45,18 @@ const getListStyle = (isDraggingOver: boolean) => ({
 const Home: React.FC = () => {
   const usfmOpenRef = useRef<HTMLInputElement>(null)
 
-  const { sentences, curIndex, setSentences } = useContext(SentenceContext)
-  const [itemArrays, setItemArrays] = useState<
-    { id: string; content: string }[][]
-  >([])
+  const { sentences, itemArrays, curIndex, setGlobalSentences, setGlobalItemArrays } = useContext(SentenceContext)
 
   const clickRef = useRef(0)
 
   useEffect(() => {
-    if (sentences.length) {
-      setItemArrays([getItems()])
+    if (sentences.length && itemArrays.length < curIndex + 1) {
+      setGlobalItemArrays(curIndex, [getItems()])
     }
   }, [sentences, curIndex])
 
   const getItems = () =>
-    sentences[curIndex][0].sourceString
+    sentences[curIndex][0][0].sourceString
       .split(/ +/)
       .map((w: string, n: number) => ({
         id: `item-${n}`,
@@ -84,7 +81,7 @@ const Home: React.FC = () => {
     }
 
     const res = readUsfm(srcUsfm)
-    setSentences(res)
+    setGlobalSentences(res)
   }
 
   const reorder = (
@@ -112,25 +109,25 @@ const Home: React.FC = () => {
 
     if (sInd === dInd) {
       const newItems = reorder(
-        itemArrays[sInd],
+        itemArrays[curIndex][sInd],
         source.index,
         destination.index
       )
-      const newItemArrays = [...itemArrays]
+      const newItemArrays = [...itemArrays[curIndex]]
       newItemArrays[sInd] = newItems
-      setItemArrays(newItemArrays)
+      setGlobalItemArrays(curIndex, newItemArrays)
     } else {
       const result = move(
-        itemArrays[sInd],
-        itemArrays[dInd],
+        itemArrays[curIndex][sInd],
+        itemArrays[curIndex][dInd],
         source,
         destination
       )
-      const newItemArrays = [...itemArrays]
+      const newItemArrays = [...itemArrays[curIndex]]
       newItemArrays[sInd] = result[sInd]
       newItemArrays[dInd] = result[dInd]
 
-      setItemArrays(newItemArrays.filter((group) => group.length))
+      setGlobalItemArrays(curIndex, newItemArrays.filter((group) => group.length))
     }
   }
 
@@ -141,7 +138,7 @@ const Home: React.FC = () => {
       setTimeout(() => {
         if (clickRef.current === 2) {
           // Double click logic
-          let newItemArrays = [...itemArrays]
+          let newItemArrays = [...itemArrays[curIndex]]
           if (
             colN === newItemArrays[rowN].length ||
             (colN === 0 && rowN === 0)
@@ -166,7 +163,7 @@ const Home: React.FC = () => {
               ...newItemArrays.slice(rowN + 1),
             ]
           }
-          setItemArrays(newItemArrays)
+          setGlobalItemArrays(curIndex, newItemArrays)
         }
 
         clickRef.current = 0
@@ -198,21 +195,21 @@ const Home: React.FC = () => {
   }
 
   const chunkUpHandler = (n: number) => {
-    const newItemArrays = [...itemArrays]
+    const newItemArrays = [...itemArrays[curIndex]]
     ;[newItemArrays[n - 1], newItemArrays[n]] = [
       newItemArrays[n],
       newItemArrays[n - 1],
     ]
-    setItemArrays(newItemArrays)
+    setGlobalItemArrays(curIndex, newItemArrays)
   }
 
   const chunkDownHandler = (n: number) => {
-    const newItemArrays = [...itemArrays]
+    const newItemArrays = [...itemArrays[curIndex]]
     ;[newItemArrays[n], newItemArrays[n + 1]] = [
       newItemArrays[n + 1],
       newItemArrays[n],
     ]
-    setItemArrays(newItemArrays)
+    setGlobalItemArrays(curIndex, newItemArrays)
   }
 
   return (
@@ -237,11 +234,11 @@ const Home: React.FC = () => {
         </Stack>
         <Grid container>
           <Grid item sm={4} p={2}>
-            {sentences.length ? sentences[curIndex][0].sourceString : ""}
+            {sentences.length ? sentences[curIndex][0][0].sourceString : ""}
           </Grid>
           <Grid item sm={4} p={2} pl={0} width="100%">
             <DragDropContext onDragEnd={onDragEnd}>
-              {itemArrays.map((items, n) => (
+              {itemArrays[curIndex]?.map((items, n) => (
                 <Stack key={n} flexDirection="row">
                   <Stack height={36} justifyContent="center">
                     <Button
@@ -254,7 +251,7 @@ const Home: React.FC = () => {
                     <Button
                       sx={{ minWidth: "30px", height: "14px" }}
                       onClick={() => chunkDownHandler(n)}
-                      disabled={n === itemArrays.length - 1}
+                      disabled={n === itemArrays[curIndex].length - 1}
                     >
                       <IoCaretDown />
                     </Button>
