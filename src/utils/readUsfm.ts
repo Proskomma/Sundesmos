@@ -206,6 +206,16 @@ export const readUsfm = (srcUsfm: string | undefined) => {
   const cl = new SofriaRenderFromProskomma({ proskomma: pk, actions })
   const docId = pk.gqlQuerySync("{documents {id}}").data.documents[0].id
   cl.renderDocument({ docId, config: {}, output })
-
-  return output.sentences
+  return output.sentences.map((sentence) => sentence.map((sent) => sent.map((s) => {
+    return {
+      ...s,
+      source: s.source.map((src, index) => {
+        return {
+          ...src,
+          id: `item-${index}`
+        }
+      })
+    }
+  })))
+  // return output.sentences
 }

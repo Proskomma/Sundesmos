@@ -32,12 +32,13 @@ export const SentenceContext = createContext<ISentenceContext>({
   itemArrays: [[[]]],
   curIndex: 0,
   setGlobalSentences: () => undefined,
+  setGlobalTotalSentences: () => undefined,
   setGlobalItemArrays: () => undefined,
-  setCurIndex: (curId: number) => undefined,
+  setCurIndex: () => undefined,
 })
 
 const App: React.FC = () => {
-  const [sentences, setGlobalSentences] = useState(new Array<Array<Array<ISentence>>>())
+  const [sentences, setGlobalTotalSentences] = useState(new Array<Array<Array<ISentence>>>())
   const [itemArrays, setItemArrays] = useState<
     { id: string; content: string }[][][]
   >([])
@@ -49,9 +50,15 @@ const App: React.FC = () => {
     setItemArrays(newItemArrays)
   }
 
+  const setGlobalSentences = (index: number, sentence: ISentence[][]) => {
+    const newSentences = [...sentences]
+    newSentences[index] = sentence
+    setGlobalTotalSentences(newSentences)
+  }
+
   return (
     <SentenceContext.Provider
-      value={{ sentences, itemArrays, curIndex, setGlobalSentences, setGlobalItemArrays, setCurIndex }}
+      value={{ sentences, itemArrays, curIndex, setGlobalSentences, setGlobalTotalSentences, setGlobalItemArrays, setCurIndex }}
     >
       <IonApp>
         <IonReactRouter>
