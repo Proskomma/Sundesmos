@@ -45,7 +45,7 @@ const getListStyle = (isDraggingOver: boolean) => ({
 
 const Home: React.FC = () => {
   const usfmOpenRef = useRef<HTMLInputElement>(null)
-  const jsonSaveRef = useRef<HTMLAnchorElement>(null)
+  const jsonOpenRef = useRef<HTMLInputElement>(null)
 
   const {
     sentences,
@@ -60,24 +60,24 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     if (sentences.length && itemArrays.length < curIndex + 1) {
-      setGlobalItemArrays(curIndex, [getItems()])
+      setGlobalItemArrays(curIndex, getItems())
     }
   }, [sentences, curIndex])
 
   const getItems = () =>
-    sentences[curIndex][0][0].sourceString
-      .split(/ +/)
-      .map((w: string, n: number) => ({
+    sentences[curIndex][0][0].sourceString.map((s) => {
+      return s.split(/ +/).map((w: string, n: number) => ({
         id: `item-${n}`,
         content: w,
       }))
+    })
 
   const openUsfm = () => {
     usfmOpenRef.current?.click()
   }
 
-  const saveJson = () => {
-    jsonSaveRef.current?.click()
+  const openJson = () => {
+    jsonOpenRef.current?.click()
   }
 
   const openUsfmHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,24 +94,28 @@ const Home: React.FC = () => {
     }
 
     const res = readUsfm(srcUsfm)
-    console.log(res)
     setGlobalTotalSentences(res)
   }
 
-  const saveJsonHandler = () => {
-    if (jsonSaveRef.current) {
-      const json = JSON.stringify(sentences)
-      const blob = new Blob([json], { type: "application/json" })
-
-      saveAs(blob, "data.json")
+  const openJsonHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.item(0)) {
+      return
+    }
+    const data = await e.target.files.item(0)?.text()
+    if (data) {
+      console.log(JSON.parse(data))
+      setGlobalTotalSentences(JSON.parse(data))
     }
   }
 
-  const reorder = (
-    list: IItem[] | ISource[],
-    startIndex: number,
-    endIndex: number
-  ) => {
+  const saveJsonHandler = () => {
+    const json = JSON.stringify(sentences)
+    const blob = new Blob([json], { type: "application/json" })
+
+    saveAs(blob, "data.json")
+  }
+
+  const reorder = (list: Array<any>, startIndex: number, endIndex: number) => {
     const result = Array.from(list)
     const [removed] = result.splice(startIndex, 1)
     result.splice(endIndex, 0, removed)
@@ -139,15 +143,7 @@ const Home: React.FC = () => {
       const newItemArrays = [...itemArrays[curIndex]]
       newItemArrays[sInd] = newItems
       setGlobalItemArrays(curIndex, newItemArrays)
-
-      const newSource = reorder(
-        sentences[curIndex][sInd][0].source,
-        source.index,
-        destination.index
-      )
-      const newSources = [...sentences[curIndex]]
-      newSources[sInd][0].source = newSource as ISource[]
-      setGlobalSentences(curIndex, newSources)
+      setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
     } else {
       const result = move(
         itemArrays[curIndex][sInd],
@@ -163,17 +159,7 @@ const Home: React.FC = () => {
         curIndex,
         newItemArrays.filter((group) => group.length)
       )
-
-      const srcResult = move(
-        sentences[curIndex][sInd][0].source,
-        sentences[curIndex][dInd][0].source,
-        source,
-        destination
-      )
-      const newSources = [...sentences[curIndex]]
-      newSources[sInd][0].source = srcResult[sInd]
-      newSources[dInd][0].source = srcResult[dInd]
-      setGlobalSentences(curIndex, newSources)
+      setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
     }
   }
 
@@ -185,7 +171,6 @@ const Home: React.FC = () => {
         if (clickRef.current === 2) {
           // Double click logic
           let newItemArrays = [...itemArrays[curIndex]]
-          let newSources = [...sentences[curIndex]]
           if (
             colN === newItemArrays[rowN].length ||
             (colN === 0 && rowN === 0)
@@ -201,12 +186,6 @@ const Home: React.FC = () => {
             ]
             newItemArrays[rowN] = []
             newItemArrays = newItemArrays.filter((a) => a.length)
-            newSources[rowN - 1][0].source = [
-              ...newSources[rowN - 1][0].source,
-              ...newSources[rowN][0].source,
-            ]
-            newSources[rowN][0].source = []
-            newSources = newSources.filter((s) => s[0].source.length)
           } else {
             // Make new row
             newItemArrays = [
@@ -215,26 +194,9 @@ const Home: React.FC = () => {
               newItemArrays[rowN].slice(colN),
               ...newItemArrays.slice(rowN + 1),
             ]
-
-            newSources = [
-              ...newSources.slice(0, rowN),
-              newSources[rowN].map((src) => {
-                return {
-                  ...src,
-                  source: src.source.slice(0, colN),
-                }
-              }),
-              newSources[rowN].map((src) => {
-                return {
-                  ...src,
-                  source: src.source.slice(colN),
-                }
-              }),
-              ...newSources.slice(rowN + 1),
-            ]
           }
           setGlobalItemArrays(curIndex, newItemArrays)
-          setGlobalSentences(curIndex, newSources)
+          setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
         }
 
         clickRef.current = 0
@@ -265,6 +227,16 @@ const Home: React.FC = () => {
     return result
   }
 
+  const itemArraysToSourceString = (newItemArrays: IItem[][]) => {
+    const newSourceString = newItemArrays.map((itemArray) =>
+      itemArray.map((arr) => arr.content).join(" ")
+    )
+    const newSources = [...sentences[curIndex]]
+    newSources[0][0].sourceString = newSourceString
+
+    return newSources
+  }
+
   const chunkUpHandler = (n: number) => {
     const newItemArrays = [...itemArrays[curIndex]]
     ;[newItemArrays[n - 1], newItemArrays[n]] = [
@@ -272,10 +244,7 @@ const Home: React.FC = () => {
       newItemArrays[n - 1],
     ]
     setGlobalItemArrays(curIndex, newItemArrays)
-
-    const newSources = [...sentences[curIndex]];
-    [newSources[n - 1], newSources[n]] = [newSources[n], newSources[n - 1]]
-    setGlobalSentences(curIndex, newSources)
+    setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
   }
 
   const chunkDownHandler = (n: number) => {
@@ -285,10 +254,7 @@ const Home: React.FC = () => {
       newItemArrays[n],
     ]
     setGlobalItemArrays(curIndex, newItemArrays)
-
-    const newSources = [...sentences[curIndex]];
-    [newSources[n], newSources[n + 1]] = [newSources[n + 1], newSources[n]]
-    setGlobalSentences(curIndex, newSources)
+    setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
   }
 
   return (
@@ -299,7 +265,13 @@ const Home: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <Stack flexDirection="row" justifyContent="center" gap={4} py={4}>
+        <Stack
+          flexDirection="row"
+          justifyContent="center"
+          gap={4}
+          pt={4}
+          pb={1}
+        >
           <Button variant="contained" onClick={openUsfm}>
             Open usfm
           </Button>
@@ -311,19 +283,27 @@ const Home: React.FC = () => {
             hidden
           />
         </Stack>
-        <Stack flexDirection="row" justifyContent="center" gap={4} py={4}>
-          <Button variant="contained">Open json</Button>
-          <Button variant="contained" onClick={saveJson}>
-            <a
-              href="#"
-              ref={jsonSaveRef}
-              download="data.json"
-              id="download-link"
-              onClick={saveJsonHandler}
-            >
+        <Stack
+          flexDirection="row"
+          justifyContent="center"
+          gap={4}
+          pt={1}
+          pb={4}
+        >
+          <Button variant="contained" onClick={openJson}>
+            Open json
+          </Button>
+          <Button variant="contained">
+            <a href="#" id="download-link" onClick={saveJsonHandler}>
               Save json
             </a>
           </Button>
+          <input
+            type="file"
+            ref={jsonOpenRef}
+            onChange={openJsonHandler}
+            hidden
+          />
         </Stack>
         <Grid container>
           <Grid item sm={4} p={2}>

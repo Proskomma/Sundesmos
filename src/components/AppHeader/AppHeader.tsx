@@ -15,14 +15,12 @@ export const AppHeader: React.FC = () => {
   const onPrevHandler = () => {
     if (curIndex > 0) {
       setCurIndex(curIndex - 1)
-      console.log(itemArrays)
     }
   }
 
   const onNextHandler = () => {
     if (curIndex < sentences.length - 1) {
       setCurIndex(curIndex + 1)
-      console.log(itemArrays)
     }
   }
 

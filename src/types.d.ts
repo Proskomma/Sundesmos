@@ -29,7 +29,7 @@ interface ISource {
 interface ISentence {
   gloss: string
   source: ISource[]
-  sourceString: string
+  sourceString: Array<string>
 }
 
 interface ISentenceContext {

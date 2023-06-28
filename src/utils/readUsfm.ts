@@ -26,7 +26,7 @@ export const readUsfm = (srcUsfm: string | undefined) => {
           workspace.chapter = null
           workspace.verses = null
           workspace.occurrences = {}
-          workspace.currentSentenceString = ""
+          workspace.currentSentenceString = [""]
         },
       },
     ],
@@ -151,7 +151,7 @@ export const readUsfm = (srcUsfm: string | undefined) => {
           context: IContext
         }) => {
           const element = context.sequences[0].element
-          workspace.currentSentenceString += element.text
+          workspace.currentSentenceString[0] += element.text
           if (
             element.text.includes(".") ||
             element.text.includes("?") ||
@@ -168,7 +168,7 @@ export const readUsfm = (srcUsfm: string | undefined) => {
                 ],
               ])
               workspace.currentSentence = []
-              workspace.currentSentenceString = ""
+              workspace.currentSentenceString = [""]
             }
           } else if (
             !element.text.includes(",") &&
