@@ -28,9 +28,11 @@ import { Layout } from "./components/Layout"
 setupIonicReact()
 
 export const SentenceContext = createContext<ISentenceContext>({
+  fileName: "",
   sentences: [[]],
   itemArrays: [[[]]],
   curIndex: 0,
+  setFileName: () => undefined,
   setGlobalSentences: () => undefined,
   setGlobalTotalSentences: () => undefined,
   setGlobalItemArrays: () => undefined,
@@ -38,6 +40,7 @@ export const SentenceContext = createContext<ISentenceContext>({
 })
 
 const App: React.FC = () => {
+  const [fileName, setFileName] = useState("")
   const [sentences, setGlobalTotalSentences] = useState(new Array<Array<Array<ISentence>>>())
   const [itemArrays, setItemArrays] = useState<
     { id: string; content: string }[][][]
@@ -58,7 +61,7 @@ const App: React.FC = () => {
 
   return (
     <SentenceContext.Provider
-      value={{ sentences, itemArrays, curIndex, setGlobalSentences, setGlobalTotalSentences, setGlobalItemArrays, setCurIndex }}
+      value={{ fileName, sentences, itemArrays, curIndex, setFileName, setGlobalSentences, setGlobalTotalSentences, setGlobalItemArrays, setCurIndex }}
     >
       <IonApp>
         <IonReactRouter>

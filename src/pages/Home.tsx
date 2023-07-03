@@ -18,8 +18,6 @@ import { IoCaretUp, IoCaretDown } from "react-icons/io5"
 import "./Home.css"
 
 import { SentenceContext } from "../App"
-import { readUsfm } from "../utils/readUsfm"
-import saveAs from "file-saver"
 
 const grid = 3
 
@@ -44,15 +42,11 @@ const getListStyle = (isDraggingOver: boolean) => ({
 })
 
 const Home: React.FC = () => {
-  const usfmOpenRef = useRef<HTMLInputElement>(null)
-  const jsonOpenRef = useRef<HTMLInputElement>(null)
-
   const {
     sentences,
     itemArrays,
     curIndex,
     setGlobalSentences,
-    setGlobalTotalSentences,
     setGlobalItemArrays,
   } = useContext(SentenceContext)
 
@@ -71,49 +65,6 @@ const Home: React.FC = () => {
         content: w,
       }))
     })
-
-  const openUsfm = () => {
-    usfmOpenRef.current?.click()
-  }
-
-  const openJson = () => {
-    jsonOpenRef.current?.click()
-  }
-
-  const openUsfmHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.item(0)) {
-      return
-    }
-
-    let srcUsfm
-    try {
-      srcUsfm = await e.target.files.item(0)?.text()
-    } catch (err) {
-      console.log(`Could not load srcUsfm: ${err}`)
-      return
-    }
-
-    const res = readUsfm(srcUsfm)
-    setGlobalTotalSentences(res)
-  }
-
-  const openJsonHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files?.item(0)) {
-      return
-    }
-    const data = await e.target.files.item(0)?.text()
-    if (data) {
-      console.log(JSON.parse(data))
-      setGlobalTotalSentences(JSON.parse(data))
-    }
-  }
-
-  const saveJsonHandler = () => {
-    const json = JSON.stringify(sentences)
-    const blob = new Blob([json], { type: "application/json" })
-
-    saveAs(blob, "data.json")
-  }
 
   const reorder = (list: Array<any>, startIndex: number, endIndex: number) => {
     const result = Array.from(list)
@@ -265,46 +216,6 @@ const Home: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <Stack
-          flexDirection="row"
-          justifyContent="center"
-          gap={4}
-          pt={4}
-          pb={1}
-        >
-          <Button variant="contained" onClick={openUsfm}>
-            Open usfm
-          </Button>
-          <Button variant="contained">Save usfm</Button>
-          <input
-            type="file"
-            ref={usfmOpenRef}
-            onChange={openUsfmHandler}
-            hidden
-          />
-        </Stack>
-        <Stack
-          flexDirection="row"
-          justifyContent="center"
-          gap={4}
-          pt={1}
-          pb={4}
-        >
-          <Button variant="contained" onClick={openJson}>
-            Open json
-          </Button>
-          <Button variant="contained">
-            <a href="#" id="download-link" onClick={saveJsonHandler}>
-              Save json
-            </a>
-          </Button>
-          <input
-            type="file"
-            ref={jsonOpenRef}
-            onChange={openJsonHandler}
-            hidden
-          />
-        </Stack>
         <Grid container>
           <Grid item sm={4} p={2}>
             {sentences.length ? sentences[curIndex][0][0].sourceString : ""}
