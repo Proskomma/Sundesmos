@@ -26,7 +26,12 @@ export const readUsfm = (srcUsfm: string | undefined) => {
           workspace.chapter = null
           workspace.verses = null
           workspace.occurrences = {}
-          workspace.currentSentenceString = [""]
+          workspace.currentSentenceString = [
+            {
+              value: "",
+              gloss: "",
+            },
+          ]
         },
       },
     ],
@@ -151,7 +156,7 @@ export const readUsfm = (srcUsfm: string | undefined) => {
           context: IContext
         }) => {
           const element = context.sequences[0].element
-          workspace.currentSentenceString[0] += element.text
+          workspace.currentSentenceString[0].value += element.text
           if (
             element.text.includes(".") ||
             element.text.includes("?") ||
@@ -163,12 +168,16 @@ export const readUsfm = (srcUsfm: string | undefined) => {
                   {
                     source: workspace.currentSentence,
                     sourceString: workspace.currentSentenceString,
-                    gloss: "",
                   },
                 ],
               ])
               workspace.currentSentence = []
-              workspace.currentSentenceString = [""]
+              workspace.currentSentenceString = [
+                {
+                  value: "",
+                  gloss: "",
+                },
+              ]
             }
           } else if (
             !element.text.includes(",") &&
@@ -206,16 +215,20 @@ export const readUsfm = (srcUsfm: string | undefined) => {
   const cl = new SofriaRenderFromProskomma({ proskomma: pk, actions })
   const docId = pk.gqlQuerySync("{documents {id}}").data.documents[0].id
   cl.renderDocument({ docId, config: {}, output })
-  return output.sentences.map((sentence) => sentence.map((sent) => sent.map((s) => {
-    return {
-      ...s,
-      source: s.source.map((src, index) => {
+  return output.sentences.map((sentence) =>
+    sentence.map((sent) =>
+      sent.map((s) => {
         return {
-          ...src,
-          id: `item-${index}`
+          ...s,
+          source: s.source.map((src, index) => {
+            return {
+              ...src,
+              id: `item-${index}`,
+            }
+          }),
         }
       })
-    }
-  })))
+    )
+  )
   // return output.sentences
 }

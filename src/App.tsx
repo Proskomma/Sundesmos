@@ -30,7 +30,7 @@ setupIonicReact()
 export const SentenceContext = createContext<ISentenceContext>({
   fileName: "",
   sentences: [[]],
-  itemArrays: [[[]]],
+  itemArrays: [[]],
   curIndex: 0,
   setFileName: () => undefined,
   setGlobalSentences: () => undefined,
@@ -41,13 +41,15 @@ export const SentenceContext = createContext<ISentenceContext>({
 
 const App: React.FC = () => {
   const [fileName, setFileName] = useState("")
-  const [sentences, setGlobalTotalSentences] = useState(new Array<Array<Array<ISentence>>>())
+  const [sentences, setGlobalTotalSentences] = useState(
+    new Array<Array<Array<ISentence>>>()
+  )
   const [itemArrays, setItemArrays] = useState<
-    { id: string; content: string }[][][]
+    IChunk[][]
   >([])
   const [curIndex, setCurIndex] = useState(0)
 
-  const setGlobalItemArrays = (index: number, itemArr: IItem[][]) => {
+  const setGlobalItemArrays = (index: number, itemArr: IChunk[]) => {
     const newItemArrays = [...itemArrays]
     newItemArrays[index] = itemArr
     setItemArrays(newItemArrays)
@@ -61,7 +63,17 @@ const App: React.FC = () => {
 
   return (
     <SentenceContext.Provider
-      value={{ fileName, sentences, itemArrays, curIndex, setFileName, setGlobalSentences, setGlobalTotalSentences, setGlobalItemArrays, setCurIndex }}
+      value={{
+        fileName,
+        sentences,
+        itemArrays,
+        curIndex,
+        setFileName,
+        setGlobalSentences,
+        setGlobalTotalSentences,
+        setGlobalItemArrays,
+        setCurIndex,
+      }}
     >
       <IonApp>
         <IonReactRouter>

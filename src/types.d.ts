@@ -27,24 +27,29 @@ interface ISource {
 }
 
 interface ISentence {
-  gloss: string
   source: ISource[]
-  sourceString: Array<string>
+  sourceString: Array<{
+    value: string
+    gloss: string
+  }>
 }
 
 interface ISentenceContext {
   fileName: string
   sentences: ISentence[][][]
-  itemArrays: IItem[][][]
+  itemArrays: IChunk[][]
   curIndex: number
   setFileName: (name: string) => void
   setGlobalSentences: (index: number, sentence: ISentence[][]) => void
   setGlobalTotalSentences: (sentences: ISentence[][][]) => void
-  setGlobalItemArrays: (index: number, itemArrays: IItem[][]) => void
+  setGlobalItemArrays: (index: number, itemArrays: IChunk[]) => void
   setCurIndex: (curIndex: number) => void
 }
 
-interface IItem {
-  id: string
-  content: string
+interface IChunk {
+  chunk: {
+    id: string
+    content: string
+  }[]
+  gloss: string
 }

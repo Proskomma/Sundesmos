@@ -13,7 +13,7 @@ import {
   DropResult,
   DraggableLocation,
 } from "../components/Droppable"
-import { Button, Grid, Stack } from "@mui/material"
+import { Button, Grid, Input, Stack } from "@mui/material"
 import { IoCaretUp, IoCaretDown } from "react-icons/io5"
 import "./Home.css"
 
@@ -50,20 +50,30 @@ const Home: React.FC = () => {
     setGlobalItemArrays,
   } = useContext(SentenceContext)
 
+  const [originText, setOriginText] = useState("")
   const clickRef = useRef(0)
 
   useEffect(() => {
     if (sentences.length && itemArrays.length < curIndex + 1) {
       setGlobalItemArrays(curIndex, getItems())
+      setOriginText(
+        sentences[curIndex][0][0].sourceString.reduce(
+          (prev, srcStr) => prev + srcStr.value,
+          ""
+        )
+      )
     }
   }, [sentences, curIndex])
 
   const getItems = () =>
     sentences[curIndex][0][0].sourceString.map((s) => {
-      return s.split(/ +/).map((w: string, n: number) => ({
-        id: `item-${n}`,
-        content: w,
-      }))
+      return {
+        chunk: s.value.split(/ +/).map((w: string, n: number) => ({
+          id: `item-${n}`,
+          content: w,
+        })),
+        gloss: "",
+      }
     })
 
   const reorder = (list: Array<any>, startIndex: number, endIndex: number) => {
@@ -87,28 +97,30 @@ const Home: React.FC = () => {
 
     if (sInd === dInd) {
       const newItems = reorder(
-        itemArrays[curIndex][sInd],
+        itemArrays[curIndex][sInd].chunk,
         source.index,
         destination.index
       )
       const newItemArrays = [...itemArrays[curIndex]]
-      newItemArrays[sInd] = newItems
+      newItemArrays[sInd] = { chunk: newItems, gloss: "" }
       setGlobalItemArrays(curIndex, newItemArrays)
       setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
     } else {
       const result = move(
-        itemArrays[curIndex][sInd],
-        itemArrays[curIndex][dInd],
+        itemArrays[curIndex][sInd].chunk,
+        itemArrays[curIndex][dInd].chunk,
         source,
         destination
       )
       const newItemArrays = [...itemArrays[curIndex]]
       newItemArrays[sInd] = result[sInd]
       newItemArrays[dInd] = result[dInd]
+      newItemArrays[sInd].gloss = ""
+      newItemArrays[dInd].gloss = ""
 
       setGlobalItemArrays(
         curIndex,
-        newItemArrays.filter((group) => group.length)
+        newItemArrays.filter((group) => group.chunk.length)
       )
       setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
     }
@@ -123,7 +135,7 @@ const Home: React.FC = () => {
           // Double click logic
           let newItemArrays = [...itemArrays[curIndex]]
           if (
-            colN === newItemArrays[rowN].length ||
+            colN === newItemArrays[rowN].chunk.length ||
             (colN === 0 && rowN === 0)
           ) {
             // first col in first row
@@ -131,18 +143,20 @@ const Home: React.FC = () => {
           }
           if (colN === 0) {
             // merge with previous row
-            newItemArrays[rowN - 1] = [
-              ...newItemArrays[rowN - 1],
-              ...newItemArrays[rowN],
+            newItemArrays[rowN - 1].chunk = [
+              ...newItemArrays[rowN - 1].chunk,
+              ...newItemArrays[rowN].chunk,
             ]
-            newItemArrays[rowN] = []
-            newItemArrays = newItemArrays.filter((a) => a.length)
+            newItemArrays[rowN - 1].gloss = ""
+            newItemArrays[rowN].chunk = []
+            newItemArrays[rowN].gloss = ""
+            newItemArrays = newItemArrays.filter((a) => a.chunk.length)
           } else {
             // Make new row
             newItemArrays = [
               ...newItemArrays.slice(0, rowN),
-              newItemArrays[rowN].slice(0, colN),
-              newItemArrays[rowN].slice(colN),
+              { chunk: newItemArrays[rowN].chunk.slice(0, colN), gloss: "" },
+              { chunk: newItemArrays[rowN].chunk.slice(colN), gloss: "" },
               ...newItemArrays.slice(rowN + 1),
             ]
           }
@@ -178,10 +192,13 @@ const Home: React.FC = () => {
     return result
   }
 
-  const itemArraysToSourceString = (newItemArrays: IItem[][]) => {
-    const newSourceString = newItemArrays.map((itemArray) =>
-      itemArray.map((arr) => arr.content).join(" ")
-    )
+  const itemArraysToSourceString = (newItemArrays: IChunk[]) => {
+    const newSourceString = newItemArrays.map(({ chunk, gloss }) => {
+      return {
+        value: chunk.map((arr) => arr.content).join(" "),
+        gloss,
+      }
+    })
     const newSources = [...sentences[curIndex]]
     newSources[0][0].sourceString = newSourceString
 
@@ -208,6 +225,16 @@ const Home: React.FC = () => {
     setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
   }
 
+  const glossChangeHandler = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    n: number
+  ) => {
+    const newItemArrays = [...itemArrays[curIndex]]
+    newItemArrays[n].gloss = e.target.value
+    setGlobalItemArrays(curIndex, newItemArrays)
+    setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
+  }
+
   return (
     <IonPage>
       <IonHeader>
@@ -218,72 +245,82 @@ const Home: React.FC = () => {
       <IonContent fullscreen>
         <Grid container>
           <Grid item sm={4} p={2}>
-            {sentences.length ? sentences[curIndex][0][0].sourceString : ""}
+            {originText}
           </Grid>
-          <Grid item sm={4} p={2} pl={0} width="100%">
+          <Grid item sm={8} p={2} pl={0} width="100%">
             <DragDropContext onDragEnd={onDragEnd}>
               {itemArrays[curIndex]?.map((items, n) => (
-                <Stack key={n} flexDirection="row">
-                  <Stack height={36} justifyContent="center">
-                    <Button
-                      sx={{ minWidth: "30px", height: "14px" }}
-                      onClick={() => chunkUpHandler(n)}
-                      disabled={!n}
-                    >
-                      <IoCaretUp />
-                    </Button>
-                    <Button
-                      sx={{ minWidth: "30px", height: "14px" }}
-                      onClick={() => chunkDownHandler(n)}
-                      disabled={n === itemArrays[curIndex].length - 1}
-                    >
-                      <IoCaretDown />
-                    </Button>
-                  </Stack>
-                  <StrictModeDroppable
-                    droppableId={`${n}`}
-                    direction="horizontal"
-                  >
-                    {(provided, snapshot) => (
-                      <div
-                        ref={provided.innerRef}
-                        style={getListStyle(snapshot.isDraggingOver)}
-                        {...provided.droppableProps}
+                <Grid container key={n}>
+                  <Grid item sm={6} p={2}>
+                    <Stack flexDirection="row">
+                      <Stack height={36} justifyContent="center">
+                        <Button
+                          sx={{ minWidth: "30px", height: "14px" }}
+                          onClick={() => chunkUpHandler(n)}
+                          disabled={!n}
+                        >
+                          <IoCaretUp />
+                        </Button>
+                        <Button
+                          sx={{ minWidth: "30px", height: "14px" }}
+                          onClick={() => chunkDownHandler(n)}
+                          disabled={n === itemArrays[curIndex].length - 1}
+                        >
+                          <IoCaretDown />
+                        </Button>
+                      </Stack>
+                      <StrictModeDroppable
+                        droppableId={`${n}`}
+                        direction="horizontal"
                       >
-                        {items.map((item, index) => (
-                          <Draggable
-                            key={item.id}
-                            draggableId={item.id}
-                            index={index}
+                        {(provided, snapshot) => (
+                          <div
+                            ref={provided.innerRef}
+                            style={getListStyle(snapshot.isDraggingOver)}
+                            {...provided.droppableProps}
                           >
-                            {(provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={getItemStyle(
-                                  snapshot.isDragging,
-                                  provided.draggableProps.style
-                                )}
-                                onClick={() =>
-                                  handleDoubleClick(item, n, index)
-                                }
+                            {items.chunk.map((item, index) => (
+                              <Draggable
+                                key={item.id}
+                                draggableId={item.id}
+                                index={index}
                               >
-                                {item.content}
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </StrictModeDroppable>
-                </Stack>
+                                {(provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    style={getItemStyle(
+                                      snapshot.isDragging,
+                                      provided.draggableProps.style
+                                    )}
+                                    onClick={() =>
+                                      handleDoubleClick(item, n, index)
+                                    }
+                                  >
+                                    {item.content}
+                                  </div>
+                                )}
+                              </Draggable>
+                            ))}
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </StrictModeDroppable>
+                    </Stack>
+                  </Grid>
+                  <Grid item sm={6} p={2}>
+                    <Input
+                      value={
+                        items.gloss
+                      }
+                      onChange={(e) => glossChangeHandler(e, n)}
+                      fullWidth
+                    ></Input>
+                  </Grid>
+                </Grid>
               ))}
             </DragDropContext>
-          </Grid>
-          <Grid item sm={4} p={2}>
-            {sentences.length ? "gloss" : ""}
           </Grid>
         </Grid>
       </IonContent>
