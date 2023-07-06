@@ -251,7 +251,7 @@ const Home: React.FC = () => {
             <DragDropContext onDragEnd={onDragEnd}>
               {itemArrays[curIndex]?.map((items, n) => (
                 <Grid container key={n}>
-                  <Grid item sm={6} p={2}>
+                  <Grid item sm={6} px={2} py={1}>
                     <Stack flexDirection="row">
                       <Stack height={36} justifyContent="center">
                         <Button
@@ -309,7 +309,7 @@ const Home: React.FC = () => {
                       </StrictModeDroppable>
                     </Stack>
                   </Grid>
-                  <Grid item sm={6} p={2}>
+                  <Grid item sm={6} px={2} py={1}>
                     <Input
                       value={
                         items.gloss
