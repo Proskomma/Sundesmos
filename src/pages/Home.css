@@ -2,3 +2,7 @@
   text-decoration: none;
   color: white;
 }
+
+.chunk-row:hover {
+  background-color: rgba(135, 206, 250, 0.3);
+}

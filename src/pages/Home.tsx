@@ -250,7 +250,7 @@ const Home: React.FC = () => {
           <Grid item sm={8} p={2} pl={0} width="100%">
             <DragDropContext onDragEnd={onDragEnd}>
               {itemArrays[curIndex]?.map((items, n) => (
-                <Grid container key={n}>
+                <Grid container key={n} className="chunk-row">
                   <Grid item sm={6} px={2} py={1}>
                     <Stack flexDirection="row">
                       <Stack height={36} justifyContent="center">
