@@ -106,8 +106,8 @@ const Home: React.FC = () => {
         destination
       )
       const newItemArrays = [...itemArrays[curIndex]]
-      newItemArrays[sInd] = result[sInd]
-      newItemArrays[dInd] = result[dInd]
+      newItemArrays[sInd].chunk = result[sInd]
+      newItemArrays[dInd].chunk = result[dInd]
       newItemArrays[sInd].gloss = ""
       newItemArrays[dInd].gloss = ""
 
