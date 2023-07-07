@@ -50,18 +50,11 @@ const Home: React.FC = () => {
     setGlobalItemArrays,
   } = useContext(SentenceContext)
 
-  const [originText, setOriginText] = useState("")
   const clickRef = useRef(0)
 
   useEffect(() => {
     if (sentences.length && itemArrays.length < curIndex + 1) {
       setGlobalItemArrays(curIndex, getItems())
-      setOriginText(
-        sentences[curIndex][0][0].sourceString.reduce(
-          (prev, srcStr) => prev + srcStr.value,
-          ""
-        )
-      )
     }
   }, [sentences, curIndex])
 
@@ -245,7 +238,12 @@ const Home: React.FC = () => {
       <IonContent fullscreen>
         <Grid container>
           <Grid item sm={4} p={2}>
-            {originText}
+            {sentences.length
+              ? sentences[curIndex][0][0].sourceString.reduce(
+                  (prev, srcStr) => prev + srcStr.value,
+                  ""
+                )
+              : ""}
           </Grid>
           <Grid item sm={8} p={2} pl={0} width="100%">
             <DragDropContext onDragEnd={onDragEnd}>
@@ -311,9 +309,7 @@ const Home: React.FC = () => {
                   </Grid>
                   <Grid item sm={6} px={2} py={1}>
                     <Input
-                      value={
-                        items.gloss
-                      }
+                      value={items.gloss}
                       onChange={(e) => glossChangeHandler(e, n)}
                       fullWidth
                     ></Input>
