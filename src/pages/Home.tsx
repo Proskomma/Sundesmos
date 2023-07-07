@@ -44,6 +44,7 @@ const getListStyle = (isDraggingOver: boolean) => ({
 const Home: React.FC = () => {
   const {
     sentences,
+    originText,
     itemArrays,
     curIndex,
     setGlobalSentences,
@@ -238,12 +239,7 @@ const Home: React.FC = () => {
       <IonContent fullscreen>
         <Grid container>
           <Grid item sm={4} p={2}>
-            {sentences.length
-              ? sentences[curIndex][0][0].sourceString.reduce(
-                  (prev, srcStr) => prev + srcStr.value,
-                  ""
-                )
-              : ""}
+            {originText[curIndex]}
           </Grid>
           <Grid item sm={8} p={2} pl={0} width="100%">
             <DragDropContext onDragEnd={onDragEnd}>

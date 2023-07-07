@@ -37,10 +37,12 @@ interface ISentence {
 interface ISentenceContext {
   fileName: string
   sentences: ISentence[][][]
+  originText: string[]
   itemArrays: IChunk[][]
   curIndex: number
   setFileName: (name: string) => void
   setGlobalSentences: (index: number, sentence: ISentence[][]) => void
+  setOriginText: (origin: string[]) => void
   setGlobalTotalSentences: (sentences: ISentence[][][]) => void
   setGlobalItemArrays: (index: number, itemArrays: IChunk[]) => void
   setCurIndex: (curIndex: number) => void

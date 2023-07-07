@@ -22,6 +22,7 @@ export const AppHeader: React.FC = () => {
     curIndex,
     setFileName,
     setGlobalTotalSentences,
+    setOriginText,
     setCurIndex,
   } = useContext(SentenceContext)
 
@@ -74,6 +75,14 @@ export const AppHeader: React.FC = () => {
 
     const res = readUsfm(srcUsfm)
     setGlobalTotalSentences(res)
+    setOriginText(
+      res.map((sentences) =>
+        sentences[0][0].sourceString.reduce(
+          (prev, srcStr) => prev + srcStr.value,
+          ""
+        )
+      )
+    )
   }
 
   const openJsonHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {

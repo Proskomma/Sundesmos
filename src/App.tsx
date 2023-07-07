@@ -30,10 +30,12 @@ setupIonicReact()
 export const SentenceContext = createContext<ISentenceContext>({
   fileName: "",
   sentences: [[]],
+  originText: [],
   itemArrays: [[]],
   curIndex: 0,
   setFileName: () => undefined,
   setGlobalSentences: () => undefined,
+  setOriginText: () => undefined,
   setGlobalTotalSentences: () => undefined,
   setGlobalItemArrays: () => undefined,
   setCurIndex: () => undefined,
@@ -44,6 +46,7 @@ const App: React.FC = () => {
   const [sentences, setGlobalTotalSentences] = useState(
     new Array<Array<Array<ISentence>>>()
   )
+  const [originText, setOriginText] = useState<string[]>([])
   const [itemArrays, setItemArrays] = useState<
     IChunk[][]
   >([])
@@ -66,10 +69,12 @@ const App: React.FC = () => {
       value={{
         fileName,
         sentences,
+        originText,
         itemArrays,
         curIndex,
         setFileName,
         setGlobalSentences,
+        setOriginText,
         setGlobalTotalSentences,
         setGlobalItemArrays,
         setCurIndex,
