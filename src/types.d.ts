@@ -8,7 +8,7 @@ interface IOutput {
       [key: string]: any
     }>
   >
-  sentences: ISentence[][][]
+  sentences: ISentence[]
 }
 
 interface IContext {
@@ -27,23 +27,23 @@ interface ISource {
 }
 
 interface ISentence {
-  source: ISource[]
-  sourceString: Array<{
-    value: string
+  chunks: {
+    source: ISource[]
     gloss: string
-  }>
+  }[]
+  sourceString: string
 }
 
 interface ISentenceContext {
   fileName: string
-  sentences: ISentence[][][]
+  sentences: ISentence[]
   originText: string[]
   itemArrays: IChunk[][]
   curIndex: number
   setFileName: (name: string) => void
-  setGlobalSentences: (index: number, sentence: ISentence[][]) => void
+  setGlobalSentences: (index: number, sentence: ISentence) => void
   setOriginText: (origin: string[]) => void
-  setGlobalTotalSentences: (sentences: ISentence[][][]) => void
+  setGlobalTotalSentences: (sentences: ISentence[]) => void
   setGlobalItemArrays: (index: number, itemArrays: IChunk[]) => void
   setCurIndex: (curIndex: number) => void
 }

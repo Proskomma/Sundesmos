@@ -26,12 +26,7 @@ export const readUsfm = (srcUsfm: string | undefined) => {
           workspace.chapter = null
           workspace.verses = null
           workspace.occurrences = {}
-          workspace.currentSentenceString = [
-            {
-              value: "",
-              gloss: "",
-            },
-          ]
+          workspace.currentSentenceString = ""
         },
       },
     ],
@@ -94,13 +89,13 @@ export const readUsfm = (srcUsfm: string | undefined) => {
                 (w.occurrences = workspace.occurrences[w.lemma])
             )
           output.sentences
-            .map((s: Array<Array<ISentence>>) =>
-              s.map(
+            .map((s: ISentence) =>
+              s.chunks.map(
                 // over each sentence chunk
                 (sc) =>
-                  sc.map(
+                  sc.source.map(
                     // over each word object in a sentence chunk
-                    (scw) => scw.source
+                    (scw) => scw
                   )
               )
             )
@@ -156,28 +151,24 @@ export const readUsfm = (srcUsfm: string | undefined) => {
           context: IContext
         }) => {
           const element = context.sequences[0].element
-          workspace.currentSentenceString[0].value += element.text
+          workspace.currentSentenceString += element.text
           if (
             element.text.includes(".") ||
             element.text.includes("?") ||
             element.text.includes("!")
           ) {
             if (workspace.currentSentence.length > 0) {
-              output.sentences.push([
-                [
+              output.sentences.push({
+                chunks: [
                   {
                     source: workspace.currentSentence,
-                    sourceString: workspace.currentSentenceString,
+                    gloss: "",
                   },
                 ],
-              ])
+                sourceString: workspace.currentSentenceString,
+              })
               workspace.currentSentence = []
-              workspace.currentSentenceString = [
-                {
-                  value: "",
-                  gloss: "",
-                },
-              ]
+              workspace.currentSentenceString = ""
             }
           } else if (
             !element.text.includes(",") &&

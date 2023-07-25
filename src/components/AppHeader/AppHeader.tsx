@@ -38,14 +38,17 @@ export const AppHeader: React.FC = () => {
     }
   }
 
-  const currentSource = () =>
-    sentences.length ? sentences[curIndex][0][0].source : null
+  const firstSource = () =>
+    sentences.length ? sentences[curIndex].chunks[0]?.source[0] : null
 
-  const currentChapter = () => currentSource()?.at(0)?.cv.split(":")[0] ?? 0
+  const lastSource = () =>
+    sentences.length ? sentences[curIndex].chunks[-1]?.source[-1] : null
 
-  const startVerse = () => currentSource()?.at(0)?.cv.split(":")[1] ?? 0
+  const currentChapter = () => firstSource()?.cv.split(":")[0] ?? 0
 
-  const endVerse = () => currentSource()?.at(-1)?.cv.split(":")[1] ?? 0
+  const startVerse = () => firstSource()?.cv.split(":")[1] ?? 0
+
+  const endVerse = () => lastSource()?.cv.split(":")[1] ?? 0
 
   const openUsfm = () => {
     usfmOpenRef.current?.click()
@@ -75,14 +78,7 @@ export const AppHeader: React.FC = () => {
 
     const res = readUsfm(srcUsfm)
     setGlobalTotalSentences(res)
-    setOriginText(
-      res.map((sentences) =>
-        sentences[0][0].sourceString.reduce(
-          (prev, srcStr) => prev + srcStr.value,
-          ""
-        )
-      )
-    )
+    setOriginText(res.map((sentence) => sentence.sourceString))
   }
 
   const openJsonHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
