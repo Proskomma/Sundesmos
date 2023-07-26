@@ -257,8 +257,13 @@ const Home: React.FC = () => {
       newItemArrays[n],
       newItemArrays[n - 1],
     ]
+    const newChunks = [...sentences[curIndex].chunks]
+    ;[newChunks[n - 1], newChunks[n]] = [newChunks[n], newChunks[n - 1]]
     setGlobalItemArrays(curIndex, newItemArrays)
-    // setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
+    setGlobalSentences(curIndex, {
+      chunks: newChunks,
+      sourceString: sentences[curIndex].sourceString,
+    })
   }
 
   const chunkDownHandler = (n: number) => {
@@ -267,8 +272,13 @@ const Home: React.FC = () => {
       newItemArrays[n + 1],
       newItemArrays[n],
     ]
+    const newChunks = [...sentences[curIndex].chunks]
+    ;[newChunks[n], newChunks[n + 1]] = [newChunks[n + 1], newChunks[n]]
     setGlobalItemArrays(curIndex, newItemArrays)
-    // setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
+    setGlobalSentences(curIndex, {
+      chunks: newChunks,
+      sourceString: sentences[curIndex].sourceString,
+    })
   }
 
   const glossChangeHandler = (
