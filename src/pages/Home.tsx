@@ -61,15 +61,17 @@ const Home: React.FC = () => {
   }, [sentences, curIndex])
 
   const getItems = () => {
-    return [{
-      chunk: sentences[curIndex].sourceString
-        .split(/ +/)
-        .map((w: string, n: number) => ({
-          id: `item-${n}`,
-          content: w,
-        })),
-      gloss: "",
-    }]
+    return sentences[curIndex].chunks.map(
+      ({ source, gloss }, index: number) => {
+        return {
+          chunk: source.map((s: ISource, n: number) => ({
+            id: `item-${index * 1000 + n}`,
+            content: s.content,
+          })),
+          gloss,
+        }
+      }
+    )
   }
 
   const reorder = (list: Array<any>, startIndex: number, endIndex: number) => {
@@ -97,10 +99,22 @@ const Home: React.FC = () => {
         source.index,
         destination.index
       )
+      const newSource = reorder(
+        sentences[curIndex].chunks[sInd].source,
+        source.index,
+        destination.index
+      )
       const newItemArrays = [...itemArrays[curIndex]]
       newItemArrays[sInd] = { chunk: newItems, gloss: "" }
+
+      const newChunks = [...sentences[curIndex].chunks]
+      newChunks[sInd].source = newSource
+
       setGlobalItemArrays(curIndex, newItemArrays)
-      // setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
+      setGlobalSentences(curIndex, {
+        chunks: newChunks,
+        sourceString: sentences[curIndex].sourceString,
+      })
     } else {
       const result = move(
         itemArrays[curIndex][sInd].chunk,
@@ -114,11 +128,27 @@ const Home: React.FC = () => {
       newItemArrays[sInd].gloss = ""
       newItemArrays[dInd].gloss = ""
 
+      const sentenceRes = move(
+        sentences[curIndex].chunks[sInd].source,
+        sentences[curIndex].chunks[dInd].source,
+        source,
+        destination
+      )
+
+      const newSentenceChunks = [...sentences[curIndex].chunks]
+      newSentenceChunks[sInd].source = sentenceRes[sInd]
+      newSentenceChunks[dInd].source = sentenceRes[dInd]
+      newSentenceChunks[sInd].gloss = ""
+      newSentenceChunks[dInd].gloss = ""
+
       setGlobalItemArrays(
         curIndex,
         newItemArrays.filter((group) => group.chunk.length)
       )
-      // setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
+      setGlobalSentences(curIndex, {
+        chunks: newSentenceChunks,
+        sourceString: sentences[curIndex].sourceString,
+      })
     }
   }
 
@@ -130,6 +160,7 @@ const Home: React.FC = () => {
         if (clickRef.current === 2) {
           // Double click logic
           let newItemArrays = [...itemArrays[curIndex]]
+          let newChunks = [...sentences[curIndex].chunks]
           if (
             colN === newItemArrays[rowN].chunk.length ||
             (colN === 0 && rowN === 0)
@@ -147,6 +178,15 @@ const Home: React.FC = () => {
             newItemArrays[rowN].chunk = []
             newItemArrays[rowN].gloss = ""
             newItemArrays = newItemArrays.filter((a) => a.chunk.length)
+
+            newChunks[rowN - 1].source = [
+              ...newChunks[rowN - 1].source,
+              ...newChunks[rowN].source,
+            ]
+            newChunks[rowN - 1].gloss = ""
+            newChunks[rowN].source = []
+            newChunks[rowN].gloss = ""
+            newChunks = newChunks.filter((c) => c.source.length)
           } else {
             // Make new row
             newItemArrays = [
@@ -155,9 +195,19 @@ const Home: React.FC = () => {
               { chunk: newItemArrays[rowN].chunk.slice(colN), gloss: "" },
               ...newItemArrays.slice(rowN + 1),
             ]
+
+            newChunks = [
+              ...newChunks.slice(0, rowN),
+              { source: newChunks[rowN].source.slice(0, colN), gloss: "" },
+              { source: newChunks[rowN].source.slice(colN), gloss: "" },
+              ...newChunks.slice(rowN + 1),
+            ]
           }
           setGlobalItemArrays(curIndex, newItemArrays)
-          // setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
+          setGlobalSentences(curIndex, {
+            chunks: newChunks,
+            sourceString: sentences[curIndex].sourceString,
+          })
         }
 
         clickRef.current = 0
@@ -227,8 +277,13 @@ const Home: React.FC = () => {
   ) => {
     const newItemArrays = [...itemArrays[curIndex]]
     newItemArrays[n].gloss = e.target.value
+    const newChunks = [...sentences[curIndex].chunks]
+    newChunks[n].gloss = e.target.value
     setGlobalItemArrays(curIndex, newItemArrays)
-    // setGlobalSentences(curIndex, itemArraysToSourceString(newItemArrays))
+    setGlobalSentences(curIndex, {
+      chunks: newChunks,
+      sourceString: sentences[curIndex].sourceString,
+    })
   }
 
   return (

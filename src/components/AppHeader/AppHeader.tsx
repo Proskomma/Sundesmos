@@ -35,6 +35,7 @@ export const AppHeader: React.FC = () => {
   const onNextHandler = () => {
     if (curIndex < sentences.length - 1) {
       setCurIndex(curIndex + 1)
+      console.log(sentences[curIndex].chunks.slice(-1))
     }
   }
 
@@ -42,7 +43,7 @@ export const AppHeader: React.FC = () => {
     sentences.length ? sentences[curIndex].chunks[0]?.source[0] : null
 
   const lastSource = () =>
-    sentences.length ? sentences[curIndex].chunks[-1]?.source[-1] : null
+    sentences.length ? sentences[curIndex].chunks.slice(-1)[0]?.source.slice(-1)[0] : null
 
   const currentChapter = () => firstSource()?.cv.split(":")[0] ?? 0
 
@@ -87,8 +88,10 @@ export const AppHeader: React.FC = () => {
     }
     const data = await e.target.files.item(0)?.text()
     if (data) {
-      console.log(JSON.parse(data))
-      setGlobalTotalSentences(JSON.parse(data))
+      const stcs = JSON.parse(data)
+      console.log(stcs)
+      setGlobalTotalSentences(stcs)
+      setOriginText(stcs.map((sentence: any) => sentence.sourceString))
     }
   }
 
