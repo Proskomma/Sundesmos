@@ -38,6 +38,7 @@ export const SentenceContext = createContext<ISentenceContext>({
   setOriginText: () => undefined,
   setGlobalTotalSentences: () => undefined,
   setGlobalItemArrays: () => undefined,
+  setItemArrays: () => undefined,
   setCurIndex: () => undefined,
 })
 
@@ -77,6 +78,7 @@ const App: React.FC = () => {
         setOriginText,
         setGlobalTotalSentences,
         setGlobalItemArrays,
+        setItemArrays,
         setCurIndex,
       }}
     >

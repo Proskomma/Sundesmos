@@ -45,6 +45,7 @@ interface ISentenceContext {
   setOriginText: (origin: string[]) => void
   setGlobalTotalSentences: (sentences: ISentence[]) => void
   setGlobalItemArrays: (index: number, itemArrays: IChunk[]) => void
+  setItemArrays: (itemArrays: IChunk[][]) => void
   setCurIndex: (curIndex: number) => void
 }
 

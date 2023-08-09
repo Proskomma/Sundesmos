@@ -3,9 +3,9 @@ const { Proskomma } = require("proskomma-core")
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { SofriaRenderFromProskomma } = require("proskomma-json-tools")
 
-const pk = new Proskomma()
 
 export const readUsfm = (srcUsfm: string | undefined) => {
+  const pk = new Proskomma()
   pk.importDocument({ lang: "grc", abbr: "ugnt" }, "usfm", srcUsfm)
 
   const actions = {

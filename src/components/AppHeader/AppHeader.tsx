@@ -19,12 +19,28 @@ export const AppHeader: React.FC = () => {
   const {
     fileName,
     sentences,
+    itemArrays,
     curIndex,
     setFileName,
     setGlobalTotalSentences,
+    setItemArrays,
     setOriginText,
     setCurIndex,
   } = useContext(SentenceContext)
+
+  const getItems = (res: ISentence[]) => {
+    return res[curIndex].chunks.map(
+      ({ source, gloss }, index: number) => {
+        return {
+          chunk: source.map((s: ISource, n: number) => ({
+            id: `item-${index * 1000 + n}`,
+            content: s.content,
+          })),
+          gloss,
+        }
+      }
+    )
+  }
 
   const onPrevHandler = () => {
     if (curIndex > 0) {
@@ -35,7 +51,6 @@ export const AppHeader: React.FC = () => {
   const onNextHandler = () => {
     if (curIndex < sentences.length - 1) {
       setCurIndex(curIndex + 1)
-      console.log(sentences[curIndex].chunks.slice(-1))
     }
   }
 
@@ -59,6 +74,11 @@ export const AppHeader: React.FC = () => {
     jsonOpenRef.current?.click()
   }
 
+  const openUsfmClickHandler = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    const element = e.target as HTMLInputElement
+    element.value = ""
+  }
+
   const openUsfmHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.item(0)) {
       return
@@ -78,8 +98,12 @@ export const AppHeader: React.FC = () => {
     }
 
     const res = readUsfm(srcUsfm)
+    setCurIndex(0)
     setGlobalTotalSentences(res)
     setOriginText(res.map((sentence) => sentence.sourceString))
+    if (res.length) {
+      setItemArrays([getItems(res)])
+    }
   }
 
   const openJsonHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,7 +113,6 @@ export const AppHeader: React.FC = () => {
     const data = await e.target.files.item(0)?.text()
     if (data) {
       const stcs = JSON.parse(data)
-      console.log(stcs)
       setGlobalTotalSentences(stcs)
       setOriginText(stcs.map((sentence: any) => sentence.sourceString))
     }
@@ -116,6 +139,7 @@ export const AppHeader: React.FC = () => {
             <input
               type="file"
               ref={usfmOpenRef}
+              onClick={openUsfmClickHandler}
               onChange={openUsfmHandler}
               hidden
             />
