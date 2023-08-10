@@ -74,7 +74,7 @@ export const AppHeader: React.FC = () => {
     jsonOpenRef.current?.click()
   }
 
-  const openUsfmClickHandler = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+  const openClickHandler = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     const element = e.target as HTMLInputElement
     element.value = ""
   }
@@ -113,8 +113,12 @@ export const AppHeader: React.FC = () => {
     const data = await e.target.files.item(0)?.text()
     if (data) {
       const stcs = JSON.parse(data)
+      setCurIndex(0)
       setGlobalTotalSentences(stcs)
       setOriginText(stcs.map((sentence: any) => sentence.sourceString))
+      if(stcs.length) {
+        setItemArrays([getItems(stcs)])
+      }
     }
   }
 
@@ -139,8 +143,15 @@ export const AppHeader: React.FC = () => {
             <input
               type="file"
               ref={usfmOpenRef}
-              onClick={openUsfmClickHandler}
+              onClick={openClickHandler}
               onChange={openUsfmHandler}
+              hidden
+            />
+            <input
+              type="file"
+              ref={jsonOpenRef}
+              onClick={openClickHandler}
+              onChange={openJsonHandler}
               hidden
             />
           </Stack>
@@ -167,12 +178,6 @@ export const AppHeader: React.FC = () => {
             <Button variant="contained" disabled>
               Save usfm
             </Button>
-            <input
-              type="file"
-              ref={jsonOpenRef}
-              onChange={openJsonHandler}
-              hidden
-            />
           </Stack>
         </Stack>
       </IonToolbar>
