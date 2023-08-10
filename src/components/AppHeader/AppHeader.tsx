@@ -6,7 +6,7 @@ import {
   IoArrowBackCircleOutline,
   IoArrowForwardCircleOutline,
 } from "react-icons/io5"
-import { Button, Box, Stack } from "@mui/material"
+import { Button, Box, Stack, Input } from "@mui/material"
 import { SentenceContext } from "../../App"
 
 import { readUsfm } from "../../utils/readUsfm"
@@ -135,6 +135,13 @@ export const AppHeader: React.FC = () => {
     saveAs(blob, "data.json")
   }
 
+  const indexChangeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const index = parseInt(e.target.value)
+    if (index > 0 && index <= sentences.length) {
+      setCurIndex(index - 1)
+    }
+  }
+
   return (
     <IonHeader>
       <IonToolbar>
@@ -167,7 +174,14 @@ export const AppHeader: React.FC = () => {
           <Stack alignItems="center">
             <Box sx={{ fontStyle: "italic" }}>{fileName}</Box>
             <Box sx={{ color: "grey", fontSize: "14px" }}>
-              Sentence {sentences.length ? curIndex + 1 : 0} of{" "}
+              Sentence
+              <Input
+                value={sentences.length ? curIndex + 1 : 0}
+                sx={{ width: '30px' }}
+                inputProps={{ style: { textAlign: 'center' }}}
+                onChange={indexChangeHandler}
+              />
+              of{" "}
               {sentences.length} (ch:{currentChapter()}, v{startVerse()} -{" "}
               {endVerse()})
             </Box>

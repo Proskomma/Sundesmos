@@ -54,7 +54,7 @@ const Home: React.FC = () => {
   const clickRef = useRef(0)
 
   useEffect(() => {
-    if (sentences.length && itemArrays.length <= curIndex + 1) {
+    if (sentences.length) {
       setGlobalItemArrays(curIndex, getItems())
     }
   }, [sentences, curIndex])
