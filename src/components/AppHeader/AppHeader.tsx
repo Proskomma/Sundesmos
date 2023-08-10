@@ -110,6 +110,12 @@ export const AppHeader: React.FC = () => {
     if (!e.target.files?.item(0)) {
       return
     }
+    const item = e.target.files.item(0)
+    if (!item) {
+      return
+    }
+
+    setFileName(item.name)
     const data = await e.target.files.item(0)?.text()
     if (data) {
       const stcs = JSON.parse(data)
