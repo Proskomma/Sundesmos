@@ -54,11 +54,27 @@ export const AppHeader: React.FC = () => {
     }
   }
 
-  const firstSource = () =>
-    sentences.length ? sentences[curIndex].chunks[0]?.source[0] : null
+  const firstSource = () => {
+    if (
+      !sentences.length ||
+      !sentences[curIndex].chunks[0]?.source.length ||
+      sentences[curIndex].chunks[0]?.source[0] === null
+    ) {
+      return null
+    }
+    return sentences[curIndex].chunks[0]?.source[0]
+  }
 
-  const lastSource = () =>
-    sentences.length ? sentences[curIndex].chunks.slice(-1)[0]?.source.slice(-1)[0] : null
+  const lastSource = () => {
+    if (
+      !sentences.length ||
+      !sentences[curIndex].chunks.slice(-1)[0]?.source.length ||
+      sentences[curIndex].chunks.slice(-1)[0]?.source[0] === null
+    ) {
+      return null
+    }
+    return sentences.length ? sentences[curIndex].chunks.slice(-1)[0]?.source.slice(-1)[0] : null
+  }
 
   const currentChapter = () => firstSource()?.cv.split(":")[0] ?? 0
 

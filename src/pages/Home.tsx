@@ -60,17 +60,21 @@ const Home: React.FC = () => {
   }, [sentences, curIndex])
 
   const getItems = () => {
-    return sentences[curIndex].chunks.map(
-      ({ source, gloss }, index: number) => {
+    return sentences[curIndex].chunks
+      .map(({ source, gloss }, index: number) => {
         return {
-          chunk: source.map((s: ISource, n: number) => ({
-            id: `item-${index * 1000 + n}`,
-            content: s.content,
-          })),
+          chunk: source
+            .filter((s) => s)
+            .map((s: ISource, n: number) => {
+              return {
+                id: `item-${index * 1000 + n}`,
+                content: s.content,
+              };
+            }),
           gloss,
-        }
-      }
-    )
+        };
+      })
+      .filter(({ chunk }) => chunk.length)
   }
 
   const reorder = (list: Array<any>, startIndex: number, endIndex: number) => {
@@ -373,6 +377,7 @@ const Home: React.FC = () => {
                     <Input
                       value={items.gloss}
                       onChange={(e) => glossChangeHandler(e, n)}
+                      sx={{ fontStyle: 'italic' }}
                       fullWidth
                     ></Input>
                   </Grid>
