@@ -13,7 +13,7 @@ import {
   DropResult,
   DraggableLocation,
 } from "../components/Droppable"
-import { Button, Grid, Input, Stack } from "@mui/material"
+import { Box, Button, Grid, Input, Stack } from "@mui/material"
 import { IoCaretUp, IoCaretDown } from "react-icons/io5"
 import "./Home.css"
 
@@ -390,7 +390,16 @@ const Home: React.FC = () => {
                                       handleDoubleClick(item, n, index)
                                     }
                                   >
-                                    {item.content} {item.index ? `(${item.index})` : ''}
+                                    <Stack flexDirection={"row"} gap={"6px"}>
+                                    <Box>{item.content}</Box>
+                                      {item.index ? (
+                                        <Box sx={{ fontSize: "10px" }}>
+                                          {item.index}
+                                        </Box>
+                                      ) : (
+                                        <></>
+                                      )}
+                                    </Stack>
                                   </div>
                                 )}
                               </Draggable>
