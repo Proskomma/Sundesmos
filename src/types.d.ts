@@ -24,6 +24,7 @@ interface ISource {
   occurences: number
   strong: Array<string>
   id: string
+  index?: number
 }
 
 interface ISentence {
@@ -53,6 +54,7 @@ interface IChunk {
   chunk: {
     id: string
     content: string
+    index?: number
   }[]
   gloss: string
 }

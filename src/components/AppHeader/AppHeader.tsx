@@ -29,17 +29,22 @@ export const AppHeader: React.FC = () => {
   } = useContext(SentenceContext)
 
   const getItems = (res: ISentence[]) => {
-    return res[curIndex].chunks.map(
-      ({ source, gloss }, index: number) => {
+    return res[0].chunks
+      .map(({ source, gloss }, index: number) => {
         return {
-          chunk: source.map((s: ISource, n: number) => ({
-            id: `item-${index * 1000 + n}`,
-            content: s.content,
-          })),
+          chunk: source
+            .filter((s) => s)
+            .map((s: ISource, n: number) => {
+              return {
+                id: `item-${index * 1000 + n}`,
+                content: s.content,
+                index: s.index,
+              };
+            }),
           gloss,
-        }
-      }
-    )
+        };
+      })
+      .filter(({ chunk }) => chunk.length)
   }
 
   const onPrevHandler = () => {
@@ -115,7 +120,27 @@ export const AppHeader: React.FC = () => {
 
     const res = readUsfm(srcUsfm)
     setCurIndex(0)
-    setGlobalTotalSentences(res)
+    setGlobalTotalSentences(res.map((sentence: ISentence) => {
+      const chunks = sentence.chunks.map((chunk) => {
+        const source = chunk.source.map((src, i) => {
+          let count = 0
+          for (let j = 0; j < i; j++) {
+            if (src.content === chunk.source[j].content) {
+              count++
+            }
+          }
+          return { ...src, index: count }
+        })
+        return {
+          source,
+          gloss: chunk.gloss
+        }
+      })
+      return {
+        chunks,
+        sourceString: sentence.sourceString
+      }
+    }))
     setOriginText(res.map((sentence) => sentence.sourceString))
     if (res.length) {
       setItemArrays([getItems(res)])
