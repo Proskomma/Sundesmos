@@ -333,7 +333,7 @@ const Home: React.FC = () => {
                                     <Box>{item.content}</Box>
                                       {item.index ? (
                                         <Box sx={{ fontSize: "10px" }}>
-                                          {item.index}
+                                          {item.index + 1}
                                         </Box>
                                       ) : (
                                         <></>
