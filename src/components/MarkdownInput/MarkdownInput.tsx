@@ -38,7 +38,9 @@ export const MarkdownInput = (props: InputProps) => {
         justifyContent={"center"}
         sx={{ width: "100%", height: "100%" }}
       >
-        <ReactMarkdown>{props.value as string}</ReactMarkdown>
+        <ReactMarkdown unwrapDisallowed allowedElements={['em', 'strong', 'italic', 'p']}>
+          {props.value as string}
+        </ReactMarkdown>
       </Stack>
       {isHovered ? (
         <Box sx={{ padding: "6px" }}>
