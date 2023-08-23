@@ -14,7 +14,7 @@ import {
   DropResult,
   DraggableLocation,
 } from "../components/Droppable"
-import { Box, Button, Grid, Input, Stack } from "@mui/material"
+import { Box, Button, Grid, Stack } from "@mui/material"
 import { IoCaretUp, IoCaretDown } from "react-icons/io5"
 import "./Home.css"
 
@@ -122,40 +122,21 @@ const Home: React.FC = () => {
     const dInd = +destination.droppableId
 
     if (sInd === dInd) {
-      // const newItems = reorder(
-      //   itemArrays[curIndex][sInd].chunk,
-      //   source.index,
-      //   destination.index
-      // )
       const newSource = reorder(
         sentences[curIndex].chunks[sInd].source,
         source.index,
         destination.index
       )
-      // const newItemArrays = [...itemArrays[curIndex]]
-      // newItemArrays[sInd] = { chunk: newItems, gloss: "" }
 
       const newChunks = [...sentences[curIndex].chunks]
       newChunks[sInd].source = newSource
 
-      // setGlobalItemArrays(curIndex, newItemArrays)
       const newSentence = remakeSentence({
         chunks: newChunks,
         sourceString: sentences[curIndex].sourceString,
       })
       setGlobalSentences(curIndex, newSentence)
     } else {
-      // const result = move(
-      //   itemArrays[curIndex][sInd].chunk,
-      //   itemArrays[curIndex][dInd].chunk,
-      //   source,
-      //   destination
-      // )
-      // const newItemArrays = [...itemArrays[curIndex]]
-      // newItemArrays[sInd].chunk = result[sInd]
-      // newItemArrays[dInd].chunk = result[dInd]
-      // newItemArrays[sInd].gloss = ""
-      // newItemArrays[dInd].gloss = ""
 
       const sentenceRes = move(
         sentences[curIndex].chunks[sInd].source,
@@ -170,10 +151,6 @@ const Home: React.FC = () => {
       newChunks[sInd].gloss = ""
       newChunks[dInd].gloss = ""
 
-      // setGlobalItemArrays(
-      //   curIndex,
-      //   newItemArrays.filter((group) => group.chunk.length)
-      // )
       const newSentence = remakeSentence({
         chunks: newChunks,
         sourceString: sentences[curIndex].sourceString,
@@ -189,7 +166,6 @@ const Home: React.FC = () => {
       setTimeout(() => {
         if (clickRef.current === 2) {
           // Double click logic
-          // let newItemArrays = [...itemArrays[curIndex]]
           let newChunks = [...sentences[curIndex].chunks]
           if (
             colN === itemArrays[curIndex][rowN].chunk.length ||
@@ -200,15 +176,6 @@ const Home: React.FC = () => {
           }
           if (colN === 0) {
             // merge with previous row
-            // newItemArrays[rowN - 1].chunk = [
-            //   ...newItemArrays[rowN - 1].chunk,
-            //   ...newItemArrays[rowN].chunk,
-            // ]
-            // newItemArrays[rowN - 1].gloss = ""
-            // newItemArrays[rowN].chunk = []
-            // newItemArrays[rowN].gloss = ""
-            // newItemArrays = newItemArrays.filter((a) => a.chunk.length)
-
             newChunks[rowN - 1].source = [
               ...newChunks[rowN - 1].source,
               ...newChunks[rowN].source,
@@ -219,13 +186,6 @@ const Home: React.FC = () => {
             newChunks = newChunks.filter((c) => c.source.length)
           } else {
             // Make new row
-            // newItemArrays = [
-            //   ...newItemArrays.slice(0, rowN),
-            //   { chunk: newItemArrays[rowN].chunk.slice(0, colN), gloss: "" },
-            //   { chunk: newItemArrays[rowN].chunk.slice(colN), gloss: "" },
-            //   ...newItemArrays.slice(rowN + 1),
-            // ]
-
             newChunks = [
               ...newChunks.slice(0, rowN),
               { source: newChunks[rowN].source.slice(0, colN), gloss: "" },
@@ -233,7 +193,7 @@ const Home: React.FC = () => {
               ...newChunks.slice(rowN + 1),
             ]
           }
-          // setGlobalItemArrays(curIndex, newItemArrays)
+          
           const newSentence = remakeSentence({
             chunks: newChunks,
             sourceString: sentences[curIndex].sourceString,
@@ -269,28 +229,10 @@ const Home: React.FC = () => {
     return result
   }
 
-  // const itemArraysToSourceString = (newItemArrays: IChunk[]) => {
-  //   const newSourceString = newItemArrays.map(({ chunk, gloss }) => {
-  //     return {
-  //       value: chunk.map((arr) => arr.content).join(" "),
-  //       gloss,
-  //     }
-  //   })
-  //   const newSources = [...sentences[curIndex]]
-  //   newSources[0][0].sourceString = newSourceString
-
-  //   return newSources
-  // }
-
   const chunkUpHandler = (n: number) => {
-    // const newItemArrays = [...itemArrays[curIndex]]
-    // ;[newItemArrays[n - 1], newItemArrays[n]] = [
-    //   newItemArrays[n],
-    //   newItemArrays[n - 1],
-    // ]
     const newChunks = [...sentences[curIndex].chunks]
     ;[newChunks[n - 1], newChunks[n]] = [newChunks[n], newChunks[n - 1]]
-    // setGlobalItemArrays(curIndex, newItemArrays)
+
     const newSentence = remakeSentence({
       chunks: newChunks,
       sourceString: sentences[curIndex].sourceString,
@@ -299,14 +241,9 @@ const Home: React.FC = () => {
   }
 
   const chunkDownHandler = (n: number) => {
-    // const newItemArrays = [...itemArrays[curIndex]]
-    // ;[newItemArrays[n], newItemArrays[n + 1]] = [
-    //   newItemArrays[n + 1],
-    //   newItemArrays[n],
-    // ]
     const newChunks = [...sentences[curIndex].chunks]
     ;[newChunks[n], newChunks[n + 1]] = [newChunks[n + 1], newChunks[n]]
-    // setGlobalItemArrays(curIndex, newItemArrays)
+
     const newSentence = remakeSentence({
       chunks: newChunks,
       sourceString: sentences[curIndex].sourceString,
