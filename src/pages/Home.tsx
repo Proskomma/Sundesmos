@@ -6,6 +6,7 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react"
+import ReactMarkdown from 'react-markdown'
 import {
   DragDropContext,
   StrictModeDroppable,
@@ -18,6 +19,7 @@ import { IoCaretUp, IoCaretDown } from "react-icons/io5"
 import "./Home.css"
 
 import { SentenceContext } from "../App"
+import { MarkdownInput } from "../components/MarkdownInput"
 
 const grid = 3
 
@@ -411,12 +413,10 @@ const Home: React.FC = () => {
                     </Stack>
                   </Grid>
                   <Grid item sm={6} px={2} py={1}>
-                    <Input
+                    <MarkdownInput
                       value={items.gloss}
                       onChange={(e) => glossChangeHandler(e, n)}
-                      sx={{ fontStyle: 'italic' }}
-                      fullWidth
-                    ></Input>
+                    />
                   </Grid>
                 </Grid>
               ))}
