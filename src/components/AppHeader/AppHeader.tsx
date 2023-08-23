@@ -1,20 +1,20 @@
-import React, { useContext, useRef } from "react"
+import React, { useContext, useRef } from "react";
 
-import { IonHeader, IonToolbar } from "@ionic/react"
+import { IonHeader, IonToolbar } from "@ionic/react";
 
 import {
   IoArrowBackCircleOutline,
   IoArrowForwardCircleOutline,
-} from "react-icons/io5"
-import { Button, Box, Stack, Input } from "@mui/material"
-import { SentenceContext } from "../../App"
+} from "react-icons/io5";
+import { Button, Box, Stack, Input } from "@mui/material";
+import { SentenceContext } from "../../App";
 
-import { readUsfm } from "../../utils/readUsfm"
-import saveAs from "file-saver"
+import { readUsfm } from "../../utils/readUsfm";
+import saveAs from "file-saver";
 
 export const AppHeader: React.FC = () => {
-  const usfmOpenRef = useRef<HTMLInputElement>(null)
-  const jsonOpenRef = useRef<HTMLInputElement>(null)
+  const usfmOpenRef = useRef<HTMLInputElement>(null);
+  const jsonOpenRef = useRef<HTMLInputElement>(null);
 
   const {
     fileName,
@@ -26,7 +26,7 @@ export const AppHeader: React.FC = () => {
     setItemArrays,
     setOriginText,
     setCurIndex,
-  } = useContext(SentenceContext)
+  } = useContext(SentenceContext);
 
   const getItems = (res: ISentence[]) => {
     return res[0].chunks
@@ -44,20 +44,44 @@ export const AppHeader: React.FC = () => {
           gloss,
         };
       })
-      .filter(({ chunk }) => chunk.length)
-  }
+      .filter(({ chunk }) => chunk.length);
+  };
+
+  const remakeSentences = (stcs: ISentence[]) => {
+    return stcs.map((stc) => {
+      const counts: { [key: string]: any } = {};
+      const chunks = stc.chunks.map((chunk) => {
+        const source = chunk.source.map((src) => {
+          if (counts[src.content] === undefined) {
+            counts[src.content] = 0;
+          } else {
+            counts[src.content]++;
+          }
+          return { ...src, index: counts[src.content] };
+        });
+        return {
+          source,
+          gloss: chunk.gloss,
+        };
+      });
+      return {
+        chunks,
+        sourceString: stc.sourceString,
+      };
+    });
+  };
 
   const onPrevHandler = () => {
     if (curIndex > 0) {
-      setCurIndex(curIndex - 1)
+      setCurIndex(curIndex - 1);
     }
-  }
+  };
 
   const onNextHandler = () => {
     if (curIndex < sentences.length - 1) {
-      setCurIndex(curIndex + 1)
+      setCurIndex(curIndex + 1);
     }
-  }
+  };
 
   const firstSource = () => {
     if (
@@ -65,10 +89,10 @@ export const AppHeader: React.FC = () => {
       !sentences[curIndex].chunks[0]?.source.length ||
       sentences[curIndex].chunks[0]?.source[0] === null
     ) {
-      return null
+      return null;
     }
-    return sentences[curIndex].chunks[0]?.source[0]
-  }
+    return sentences[curIndex].chunks[0]?.source[0];
+  };
 
   const lastSource = () => {
     if (
@@ -76,112 +100,98 @@ export const AppHeader: React.FC = () => {
       !sentences[curIndex].chunks.slice(-1)[0]?.source.length ||
       sentences[curIndex].chunks.slice(-1)[0]?.source[0] === null
     ) {
-      return null
+      return null;
     }
-    return sentences.length ? sentences[curIndex].chunks.slice(-1)[0]?.source.slice(-1)[0] : null
-  }
+    return sentences.length
+      ? sentences[curIndex].chunks.slice(-1)[0]?.source.slice(-1)[0]
+      : null;
+  };
 
-  const currentChapter = () => firstSource()?.cv.split(":")[0] ?? 0
+  const currentChapter = () => firstSource()?.cv.split(":")[0] ?? 0;
 
-  const startVerse = () => firstSource()?.cv.split(":")[1] ?? 0
+  const startVerse = () => firstSource()?.cv.split(":")[1] ?? 0;
 
-  const endVerse = () => lastSource()?.cv.split(":")[1] ?? 0
+  const endVerse = () => lastSource()?.cv.split(":")[1] ?? 0;
 
   const openUsfm = () => {
-    usfmOpenRef.current?.click()
-  }
+    usfmOpenRef.current?.click();
+  };
 
   const openJson = () => {
-    jsonOpenRef.current?.click()
-  }
+    jsonOpenRef.current?.click();
+  };
 
-  const openClickHandler = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
-    const element = e.target as HTMLInputElement
-    element.value = ""
-  }
+  const openClickHandler = (
+    e: React.MouseEvent<HTMLInputElement, MouseEvent>
+  ) => {
+    const element = e.target as HTMLInputElement;
+    element.value = "";
+  };
 
   const openUsfmHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.item(0)) {
-      return
+      return;
     }
-    const item = e.target.files.item(0)
+    const item = e.target.files.item(0);
     if (!item) {
-      return
+      return;
     }
 
-    setFileName(item.name)
-    let srcUsfm
+    setFileName(item.name);
+    let srcUsfm;
     try {
-      srcUsfm = await e.target.files.item(0)?.text()
+      srcUsfm = await e.target.files.item(0)?.text();
     } catch (err) {
-      console.log(`Could not load srcUsfm: ${err}`)
-      return
+      console.log(`Could not load srcUsfm: ${err}`);
+      return;
     }
 
-    const res = readUsfm(srcUsfm)
-    setCurIndex(0)
-    setGlobalTotalSentences(res.map((sentence: ISentence) => {
-      const chunks = sentence.chunks.map((chunk) => {
-        const source = chunk.source.map((src, i) => {
-          let count = 0
-          for (let j = 0; j < i; j++) {
-            if (src.content === chunk.source[j].content) {
-              count++
-            }
-          }
-          return { ...src, index: count }
-        })
-        return {
-          source,
-          gloss: chunk.gloss
-        }
-      })
-      return {
-        chunks,
-        sourceString: sentence.sourceString
-      }
-    }))
-    setOriginText(res.map((sentence) => sentence.sourceString))
+    const res = readUsfm(srcUsfm);
+    setCurIndex(0);
+    setGlobalTotalSentences(remakeSentences(res));
+    setOriginText(res.map((sentence) => sentence.sourceString));
     if (res.length) {
-      setItemArrays([getItems(res)])
+      setItemArrays([getItems(res)]);
     }
-  }
+  };
 
   const openJsonHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.item(0)) {
-      return
+      return;
     }
-    const item = e.target.files.item(0)
+    const item = e.target.files.item(0);
     if (!item) {
-      return
+      return;
     }
 
-    setFileName(item.name)
-    const data = await e.target.files.item(0)?.text()
+    setFileName(item.name);
+    const data = await e.target.files.item(0)?.text();
     if (data) {
-      const stcs = JSON.parse(data)
-      setCurIndex(0)
-      setGlobalTotalSentences(stcs)
-      setOriginText(stcs.map((sentence: any) => sentence.sourceString))
-      if(stcs.length) {
-        setItemArrays([getItems(stcs)])
+      const stcs = JSON.parse(data);
+      setCurIndex(0);
+      setGlobalTotalSentences(remakeSentences(stcs));
+      setOriginText(stcs.map((sentence: any) => sentence.sourceString));
+      if (stcs.length) {
+        setItemArrays([getItems(stcs)]);
       }
     }
-  }
+  };
 
   const saveJsonHandler = () => {
-    const json = JSON.stringify(sentences)
-    const blob = new Blob([json], { type: "application/json" })
+    const json = JSON.stringify(sentences);
+    const blob = new Blob([json], { type: "application/json" });
 
-    saveAs(blob, "data.json")
-  }
+    saveAs(blob, "data.json");
+  };
 
-  const indexChangeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const index = parseInt(e.target.value)
+  const indexChangeHandler = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const index = parseInt(e.target.value);
     if (index > 0 && index <= sentences.length) {
-      setCurIndex(index - 1)
+      setCurIndex(index - 1);
     }
-  }
+  };
 
   return (
     <IonHeader>
@@ -218,12 +228,11 @@ export const AppHeader: React.FC = () => {
               Sentence
               <Input
                 value={sentences.length ? curIndex + 1 : 0}
-                sx={{ width: '30px' }}
-                inputProps={{ style: { textAlign: 'center' }}}
+                sx={{ width: "30px" }}
+                inputProps={{ style: { textAlign: "center" } }}
                 onChange={indexChangeHandler}
               />
-              of{" "}
-              {sentences.length} (ch:{currentChapter()}, v{startVerse()} -{" "}
+              of {sentences.length} (ch:{currentChapter()}, v{startVerse()} -{" "}
               {endVerse()})
             </Box>
           </Stack>
@@ -243,5 +252,5 @@ export const AppHeader: React.FC = () => {
         </Stack>
       </IonToolbar>
     </IonHeader>
-  )
-}
+  );
+};

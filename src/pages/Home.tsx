@@ -62,15 +62,15 @@ const Home: React.FC = () => {
   }, [sentences, curIndex])
 
   const remakeSentence = (stc: ISentence) => {
+    const counts: {[key: string]: any} = {}
     const chunks = stc.chunks.map((chunk) => {
-      const source = chunk.source.map((src, i) => {
-        let count = 0
-        for (let j = 0; j < i; j++) {
-          if (src.content === chunk.source[j].content) {
-            count++
-          }
+      const source = chunk.source.map((src) => {
+        if (counts[src.content] === undefined) {
+          counts[src.content] = 0
+        } else {
+          counts[src.content]++
         }
-        return { ...src, index: count }
+        return { ...src, index: counts[src.content] }
       })
       return {
         source,
