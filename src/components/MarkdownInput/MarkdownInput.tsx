@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Input, Stack, InputProps, Box } from "@mui/material";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import Markdown from "react-markdown";
 import { IoCheckmark, IoCreate } from "react-icons/io5";
 
 export const MarkdownInput = (props: InputProps) => {
@@ -38,9 +38,9 @@ export const MarkdownInput = (props: InputProps) => {
         justifyContent={"center"}
         sx={{ width: "100%", height: "100%" }}
       >
-        <ReactMarkdown unwrapDisallowed allowedElements={['em', 'strong', 'italic', 'p']}>
+        <Markdown unwrapDisallowed allowedElements={['em', 'strong', 'italic', 'p']}>
           {props.value as string}
-        </ReactMarkdown>
+        </Markdown>
       </Stack>
       {isHovered ? (
         <Box sx={{ padding: "6px" }}>

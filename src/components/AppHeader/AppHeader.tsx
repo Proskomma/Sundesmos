@@ -19,7 +19,7 @@ export const AppHeader: React.FC = () => {
   const {
     fileName,
     sentences,
-    itemArrays,
+    // itemArrays,
     curIndex,
     setFileName,
     setGlobalTotalSentences,

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react"
+import React, { useContext, useEffect, useRef } from "react"
 import {
   IonContent,
   IonHeader,
@@ -6,7 +6,6 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react"
-import ReactMarkdown from 'react-markdown'
 import {
   DragDropContext,
   StrictModeDroppable,
@@ -221,7 +220,6 @@ const Home: React.FC = () => {
 
     destClone.splice(droppableDestination.index, 0, removed)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result: { [key: string]: any } = {}
     result[droppableSource.droppableId] = sourceClone
     result[droppableDestination.droppableId] = destClone

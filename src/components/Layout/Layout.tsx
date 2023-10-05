@@ -1,11 +1,11 @@
 import React from 'react';
-import { useRef } from 'react';
+// import { useRef } from 'react';
 import {
-  IonMenu,
+  // IonMenu,
   IonPage,
   IonContent,
-  IonFooter,
-  IonMenuToggle,
+  // IonFooter,
+  // IonMenuToggle,
 } from '@ionic/react';
 import { AppHeader } from '../AppHeader';
 
