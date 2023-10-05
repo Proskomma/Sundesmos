@@ -142,8 +142,7 @@ export const AppHeader: React.FC = () => {
     try {
       srcUsfm = await e.target.files.item(0)?.text();
     } catch (err) {
-      console.log(`Could not load srcUsfm: ${err}`);
-      return;
+      throw new Error(`Could not load srcUsfm: ${err}`);
     }
 
     const res = readUsfm(srcUsfm);
