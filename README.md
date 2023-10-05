@@ -3,7 +3,7 @@ PoC for a Juxtalinear Bible Translation Editor
 
 # How to Run
 ## Cloning the App
-`$ git clone https://github.com/etenlab/poc-juxtalinear.git`
+`$ git clone https://github.com/Proskomma/Sundesmos.git`
 ## Install Dependencies
 `npm i`
 ## Run the App
