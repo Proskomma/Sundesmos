@@ -240,9 +240,9 @@ export const AppHeader: React.FC = () => {
           </Button>
           <Stack flexDirection="row" justifyContent="center" gap={1}>
             <Button variant="contained">
-              <a href="#" id="download-link" onClick={saveJsonHandler}>
+              <div id="download-link" onClick={saveJsonHandler}>
                 Save json
-              </a>
+              </div>
             </Button>
             <Button variant="contained" disabled>
               Save usfm
