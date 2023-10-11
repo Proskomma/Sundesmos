@@ -16,7 +16,7 @@ interface LayoutProps {
 export const Layout = ({ children }: LayoutProps) => {
   return (
     <>
-      <IonPage id="poc-juxtalinear-app">
+      <IonPage id="sundesmos">
         <AppHeader />
         <IonContent fullscreen>
           {children}

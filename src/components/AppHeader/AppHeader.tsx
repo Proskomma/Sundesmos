@@ -222,7 +222,7 @@ export const AppHeader: React.FC = () => {
             <IoArrowBackCircleOutline size={32} />
           </Button>
           <Stack alignItems="center">
-            <Box sx={{ fontStyle: "italic" }}>{fileName}</Box>
+            <Box sx={{ color: "grey", fontStyle: "italic" }}>{fileName}</Box>
             <Box sx={{ color: "grey", fontSize: "14px" }}>
               Sentence
               <Input

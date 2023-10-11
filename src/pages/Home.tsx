@@ -5,6 +5,7 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
+  IonTextarea
 } from "@ionic/react"
 import {
   DragDropContext,
@@ -29,7 +30,7 @@ const getItemStyle = (isDragging: boolean, draggableStyle: any) => ({
   margin: `0 ${grid}px 0 0`,
 
   // change background colour if dragging
-  background: isDragging ? "lightgreen" : "white",
+  background: isDragging ? "lightgreen" : "lightgrey",
 
   // styles we need to apply on draggables
   ...draggableStyle,
@@ -53,6 +54,16 @@ const Home: React.FC = () => {
   } = useContext(SentenceContext)
 
   const clickRef = useRef(0)
+
+  // const [mode, setMode] = useState(window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light");
+
+  // useEffect(() => {
+  //   window.matchMedia('(prefers-color-scheme: dark)')
+  //     .addEventListener('change', event => {
+  //       const colorScheme = event.matches ? "dark" : "light";
+  //       setMode(colorScheme);
+  //     });
+  // }, []);
 
   useEffect(() => {
     if (sentences.length) {
@@ -274,7 +285,9 @@ const Home: React.FC = () => {
       <IonContent fullscreen>
         <Grid container>
           <Grid item sm={4} p={2}>
-            {originText[curIndex]}
+            <IonTextarea className="source-text">
+              {originText[curIndex]}
+            </IonTextarea>
           </Grid>
           <Grid item sm={8} p={2} pl={0} width="100%">
             <DragDropContext onDragEnd={onDragEnd}>
@@ -316,6 +329,7 @@ const Home: React.FC = () => {
                               >
                                 {(provided, snapshot) => (
                                   <div
+                                    className="draggable"
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}

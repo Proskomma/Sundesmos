@@ -9,7 +9,10 @@ export const MarkdownInput = (props: InputProps) => {
 
   if (isEdit) {
     return (
-      <Stack flexDirection={"row"}>
+      <Stack
+        flexDirection={"row"}
+        sx={{ background: "lightgrey", width: "100%", height: "36px", pl: "8px" }}
+      >
         <Box flexGrow={1}>
           <Input {...props} fullWidth onBlur={() => setIsEdit(false)}></Input>
         </Box>
