@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useEffect, useState } from "react";
 
 import { IonHeader, IonToolbar } from "@ionic/react";
 
@@ -192,6 +192,16 @@ export const AppHeader: React.FC = () => {
     }
   };
 
+  const [mode, setMode] = useState(window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light");
+
+  useEffect(() => {
+    window.matchMedia('(prefers-color-scheme: dark)')
+      .addEventListener('change', event => {
+        const colorScheme = event.matches ? "dark" : "light";
+        setMode(colorScheme);
+      });
+  }, []);
+
   return (
     <IonHeader>
       <IonToolbar>
@@ -228,7 +238,7 @@ export const AppHeader: React.FC = () => {
               <Input
                 value={sentences.length ? curIndex + 1 : 0}
                 sx={{ width: "30px" }}
-                inputProps={{ style: { textAlign: "center" } }}
+                inputProps={{ style: { textAlign: "center", color: mode == "dark" ? "white" : "black" } }}
                 onChange={indexChangeHandler}
               />
               of {sentences.length} (ch:{currentChapter()}, v{startVerse()} -{" "}
