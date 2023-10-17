@@ -28,6 +28,7 @@ interface ISource {
 }
 
 interface ISentence {
+  originalSource?: ISource[],
   chunks: {
     source: ISource[]
     gloss: string

@@ -159,6 +159,7 @@ export const readUsfm = (srcUsfm: string | undefined) => {
           ) {
             if (workspace.currentSentence.length > 0) {
               output.sentences.push({
+                originalSource : workspace.currentSentence,
                 chunks: [
                   {
                     source: workspace.currentSentence,

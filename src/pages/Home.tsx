@@ -88,6 +88,7 @@ const Home: React.FC = () => {
       }
     })
     return {
+      originalSource: stc.originalSource,
       chunks,
       sourceString: stc.sourceString
     }
@@ -142,6 +143,7 @@ const Home: React.FC = () => {
       newChunks[sInd].source = newSource
 
       const newSentence = remakeSentence({
+        originalSource: sentences[curIndex].originalSource,
         chunks: newChunks,
         sourceString: sentences[curIndex].sourceString,
       })
@@ -162,6 +164,7 @@ const Home: React.FC = () => {
       newChunks[dInd].gloss = ""
 
       const newSentence = remakeSentence({
+        originalSource: sentences[curIndex].originalSource,
         chunks: newChunks,
         sourceString: sentences[curIndex].sourceString,
       })
@@ -205,6 +208,7 @@ const Home: React.FC = () => {
           }
           
           const newSentence = remakeSentence({
+            originalSource: sentences[curIndex].originalSource,
             chunks: newChunks,
             sourceString: sentences[curIndex].sourceString,
           })
@@ -243,6 +247,7 @@ const Home: React.FC = () => {
     ;[newChunks[n - 1], newChunks[n]] = [newChunks[n], newChunks[n - 1]]
 
     const newSentence = remakeSentence({
+      originalSource: sentences[curIndex].originalSource,
       chunks: newChunks,
       sourceString: sentences[curIndex].sourceString,
     })
@@ -254,6 +259,7 @@ const Home: React.FC = () => {
     ;[newChunks[n], newChunks[n + 1]] = [newChunks[n + 1], newChunks[n]]
 
     const newSentence = remakeSentence({
+      originalSource: sentences[curIndex].originalSource,
       chunks: newChunks,
       sourceString: sentences[curIndex].sourceString,
     })
@@ -270,6 +276,7 @@ const Home: React.FC = () => {
     newChunks[n].gloss = e.target.value
     setGlobalItemArrays(curIndex, newItemArrays)
     setGlobalSentences(curIndex, {
+      originalSource: sentences[curIndex].originalSource,
       chunks: newChunks,
       sourceString: sentences[curIndex].sourceString,
     })

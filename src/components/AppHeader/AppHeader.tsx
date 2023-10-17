@@ -65,6 +65,7 @@ export const AppHeader: React.FC = () => {
         };
       });
       return {
+        originalSource: stc.originalSource,
         chunks,
         sourceString: stc.sourceString,
       };
