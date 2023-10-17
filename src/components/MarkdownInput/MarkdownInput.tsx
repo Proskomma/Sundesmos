@@ -6,6 +6,27 @@ import { IoCheckmark, IoCreate } from "react-icons/io5";
 export const MarkdownInput = (props: InputProps) => {
   const [isEdit, setIsEdit] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  // const clickRef = useRef(0);
+
+  // const enterPressed = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  //   if(isEdit && e.key == "Enter") {
+  //     setIsEdit(false);
+  //   }
+  // }
+
+  // const handleDoubleClickToEdit = () => {
+  //   clickRef.current += 1
+  //   console.log(clickRef.current);
+  //   console.log(isEdit);
+  //   if (clickRef.current === 1) {
+  //     setTimeout(() => {
+  //       if (clickRef.current >= 2) {
+  //         setIsEdit(true);
+  //         clickRef.current = 0
+  //       }
+  //     }, 300)
+  //   }
+  // }
 
   if (isEdit) {
     return (

@@ -38,6 +38,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.1",
     "typescript": "^4.9.5",
+    "universal-cookie": "^6.1.1",
     "web-vitals": "^3.5.0",
     "workbox-background-sync": "^7.0.0",
     "workbox-broadcast-update": "^7.0.0",
@@ -64,7 +65,7 @@
     "source-map-explorer": "^2.5.3"
   },
   "scripts": {
-    "analyze": "source-map-explorer 'build/static/js/*.js' --html analyse/results.html",
+    "analyze": " source-map-explorer 'build/static/js/*.js' --html analyse/results.html",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",

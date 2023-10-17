@@ -50,7 +50,7 @@ export const AppHeader: React.FC = () => {
   const remakeSentences = (stcs: ISentence[]) => {
     return stcs.map((stc) => {
       const counts: { [key: string]: any } = {};
-      const chunks = stc.chunks.map((chunk) => {
+      const chunks = stc.chunks.filter(({source}) => source[0]).map((chunk) => {
         const source = chunk.source.map((src) => {
           if (counts[src.content] === undefined) {
             counts[src.content] = 0;
@@ -177,12 +177,15 @@ export const AppHeader: React.FC = () => {
   };
 
   const saveJsonHandler = () => {
+    sentences[0].chunks.filter(({source}) => source[0]).forEach(({ source }) => {
+      source.filter(e => e);
+    });
     const json = JSON.stringify(sentences);
     const blob = new Blob([json], { type: "application/json" });
 
     saveAs(blob, "data.json");
   };
-
+  
   const indexChangeHandler = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
