@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useRef } from "react"
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useContext, useEffect, useRef, useState, useCallback } from "react"
 import {
   IonContent,
   IonHeader,
@@ -51,9 +52,12 @@ const Home: React.FC = () => {
     curIndex,
     setGlobalSentences,
     setGlobalItemArrays,
-  } = useContext(SentenceContext)
+  } = useContext(SentenceContext);
 
-  const clickRef = useRef(0)
+  const [currentChunk, setCurrentChunk] = useState(-1);
+  const [editStates, setEditStates] = useState<boolean[]>(new Array(1).fill(false));
+
+  const clickRef = useRef(0);
 
   // const [mode, setMode] = useState(window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light");
 
@@ -132,6 +136,7 @@ const Home: React.FC = () => {
     const sInd = +source.droppableId
     const dInd = +destination.droppableId
 
+    setCurrentChunk(dInd);
     if (sInd === dInd) {
       const newSource = reorder(
         sentences[curIndex].chunks[sInd].source,
@@ -147,7 +152,8 @@ const Home: React.FC = () => {
         chunks: newChunks,
         sourceString: sentences[curIndex].sourceString,
       })
-      setGlobalSentences(curIndex, newSentence)
+      setGlobalSentences(curIndex, newSentence);
+      setEditStates(new Array(newChunks.length).fill(false));
     } else {
 
       const sentenceRes = move(
@@ -168,9 +174,39 @@ const Home: React.FC = () => {
         chunks: newChunks,
         sourceString: sentences[curIndex].sourceString,
       })
-      setGlobalSentences(curIndex, newSentence)
+      setGlobalSentences(curIndex, newSentence);
+      setEditStates(new Array(newChunks.length).fill(false));
     }
   }
+
+  const setEditState = (index: number, value: boolean) => {
+    setEditStates(editStates.map((state, i) => (i === index ? value : state)));
+    return editStates[index];
+  };
+
+  const handleTabPress = useCallback(() => {
+    if(itemArrays[curIndex]) {
+      const contTrue = editStates.indexOf(true);
+      if(contTrue != -1) {
+        setEditState(contTrue, false);
+        setEditState((contTrue+1) % editStates.length, true);
+      } else {
+        setEditState(0, true);
+      }
+    }
+  }, [itemArrays, curIndex, editStates]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        handleTabPress();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleTabPress]);
 
   const handleDoubleClick = (item: any, rowN: number, colN: number) => {
     clickRef.current += 1
@@ -206,6 +242,8 @@ const Home: React.FC = () => {
               ...newChunks.slice(rowN + 1),
             ]
           }
+
+          setCurrentChunk(rowN);
           
           const newSentence = remakeSentence({
             originalSource: sentences[curIndex].originalSource,
@@ -213,6 +251,7 @@ const Home: React.FC = () => {
             sourceString: sentences[curIndex].sourceString,
           })
           setGlobalSentences(curIndex, newSentence)
+          setEditStates(new Array(newChunks.length).fill(false));
         }
 
         clickRef.current = 0
@@ -251,7 +290,8 @@ const Home: React.FC = () => {
       chunks: newChunks,
       sourceString: sentences[curIndex].sourceString,
     })
-    setGlobalSentences(curIndex, newSentence)
+    setGlobalSentences(curIndex, newSentence);
+    setEditStates(new Array(newChunks.length).fill(false));
   }
 
   const chunkDownHandler = (n: number) => {
@@ -262,8 +302,9 @@ const Home: React.FC = () => {
       originalSource: sentences[curIndex].originalSource,
       chunks: newChunks,
       sourceString: sentences[curIndex].sourceString,
-    })
-    setGlobalSentences(curIndex, newSentence)
+    });
+    setGlobalSentences(curIndex, newSentence);
+    setEditStates(new Array(newChunks.length).fill(false));
   }
 
   const glossChangeHandler = (
@@ -279,7 +320,7 @@ const Home: React.FC = () => {
       originalSource: sentences[curIndex].originalSource,
       chunks: newChunks,
       sourceString: sentences[curIndex].sourceString,
-    })
+    });
   }
 
   return (
@@ -348,7 +389,7 @@ const Home: React.FC = () => {
                                       handleDoubleClick(item, n, index)
                                     }
                                   >
-                                    <Stack flexDirection={"row"} gap={"6px"}>
+                                  <Stack flexDirection={"row"} gap={"6px"}>
                                     <Box>{item.content}</Box>
                                       {item.index ? (
                                         <Box sx={{ fontSize: "10px" }}>
@@ -370,8 +411,11 @@ const Home: React.FC = () => {
                   </Grid>
                   <Grid item sm={6} px={2} py={1}>
                     <MarkdownInput
+                      key={n}
                       value={items.gloss}
                       onChange={(e) => glossChangeHandler(e, n)}
+                      isEditing={editStates[n]}
+                      setIsEditing={(value) => setEditState(n, value)}
                     />
                   </Grid>
                 </Grid>

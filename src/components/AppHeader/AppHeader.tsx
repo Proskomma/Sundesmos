@@ -184,7 +184,10 @@ export const AppHeader: React.FC = () => {
     const json = JSON.stringify(sentences);
     const blob = new Blob([json], { type: "application/json" });
 
-    saveAs(blob, "data.json");
+    // eslint-disable-next-line prefer-const
+    let name = fileName.split(".");
+    name.pop();
+    saveAs(blob, name.join("")+"-TJX.json");
   };
   
   const indexChangeHandler = (
