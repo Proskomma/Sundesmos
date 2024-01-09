@@ -11,6 +11,7 @@ import { SentenceContext } from "../../App";
 
 import { readUsfm } from "../../utils/readUsfm";
 import saveAs from "file-saver";
+import ldb from "localdata";
 
 export const AppHeader: React.FC = () => {
   const usfmOpenRef = useRef<HTMLInputElement>(null);
@@ -27,6 +28,8 @@ export const AppHeader: React.FC = () => {
     setOriginText,
     setCurIndex,
   } = useContext(SentenceContext);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
   const getItems = (res: ISentence[]) => {
     return res[0].chunks
@@ -139,6 +142,7 @@ export const AppHeader: React.FC = () => {
     }
 
     setFileName(item.name);
+    ldb.set('lastFilename', item.name);
     let srcUsfm;
     try {
       srcUsfm = await e.target.files.item(0)?.text();
@@ -165,10 +169,13 @@ export const AppHeader: React.FC = () => {
     }
 
     setFileName(item.name);
+    ldb.set('lastFilename', item.name);
     const data = await e.target.files.item(0)?.text();
     if (data) {
       const stcs = JSON.parse(data);
-      setCurIndex(0);
+      ldb.get("lastSelectedSentence", (value) => {
+        setCurIndex(parseInt(value == "" ? "0" : value));
+      });
       setGlobalTotalSentences(remakeSentences(stcs));
       setOriginText(stcs.map((sentence: any) => sentence.sourceString));
       if (stcs.length) {
@@ -176,6 +183,19 @@ export const AppHeader: React.FC = () => {
       }
     }
   };
+
+  setTimeout(
+    () => {
+      ldb.set('lastSelectedSentence', curIndex + "");
+      
+      ldb.get('lastSelectedSentence', (v) => {
+        console.log("lastSelectedSentence ==",v);
+      });
+      ldb.get('lastFilename', (v) => {
+        console.log("lastFilename ==",v);
+      });
+    }
+  , 3000);
 
   const saveJsonHandler = () => {
     sentences[0].chunks.filter(({source}) => source[0]).forEach(({ source }) => {
@@ -187,7 +207,9 @@ export const AppHeader: React.FC = () => {
     // eslint-disable-next-line prefer-const
     let name = fileName.split(".");
     name.pop();
-    saveAs(blob, name.join("")+"-TJX.json");
+    const finalName = name.join("")+"-TJX.json";
+    saveAs(blob, finalName);
+    ldb.set('myFile', json);
   };
   
   const indexChangeHandler = (
@@ -207,6 +229,36 @@ export const AppHeader: React.FC = () => {
         const colorScheme = event.matches ? "dark" : "light";
         setMode(colorScheme);
       });
+
+    ldb.get("myFile", (value) => {
+      if(value) {
+        ldb.get("lastFilename", (value) => {
+          setFileName(value);
+        });
+        const data = value;
+        if (data) {
+          const stcs = JSON.parse(data);
+          ldb.get("lastSelectedSentence", (value) => {
+            setCurIndex(parseInt(value == "" ? "0" : value));
+          });
+          setGlobalTotalSentences(remakeSentences(stcs));
+          setOriginText(stcs.map((sentence: any) => sentence.sourceString));
+          if (stcs.length) {
+            setItemArrays([getItems(stcs)]);
+          }
+        }
+      }
+    });
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().then(persistent => {
+        if (persistent) {
+          console.log("Storage will not be cleared except by explicit user action");
+        } else {
+          console.warn("Storage may be cleared by the UA under storage pressure.");
+        }
+      });
+    }
+    
   }, []);
 
   return (
