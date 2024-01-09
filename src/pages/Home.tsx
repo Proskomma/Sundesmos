@@ -196,11 +196,28 @@ const Home: React.FC = () => {
     }
   }, [itemArrays, curIndex, editStates]);
 
+  const handleSave = useCallback(() => {
+    const element = document.querySelector('div[id="download-link"]');
+    element?.dispatchEvent(
+      new MouseEvent("click", {
+          view: window,
+          bubbles: true,
+          cancelable: true,
+          buttons: 1
+      })
+    )
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Tab') {
         event.preventDefault();
         handleTabPress();
+      }
+
+      if (event.ctrlKey && (event.key === 's' || event.key === 'S')) {
+        event.preventDefault();
+        handleSave();
       }
     };
 
